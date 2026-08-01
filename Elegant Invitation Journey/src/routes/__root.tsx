@@ -10,7 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import coupleBg from "../assets/couple-background.png.asset.json";
+import coupleBg from "../assets/couple-background.png";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 
@@ -138,7 +138,7 @@ function RootComponent() {
           className="pointer-events-none fixed inset-0 -z-20 h-[100dvh] w-[100vw] overflow-hidden"
         >
           <img
-            src={coupleBg.url}
+            src={coupleBg}
             alt=""
             aria-hidden="true"
             className="h-full w-full object-cover object-center"
