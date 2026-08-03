@@ -9,6 +9,8 @@ import { nitro } from "nitro/vite";
 export default defineConfig(({ command }) => ({
   server: {
     port: 8080,
+    // Bind to every interface so a phone on the same Wi-Fi can reach the dev server.
+    host: true,
   },
   css: {
     transformer: "lightningcss",
