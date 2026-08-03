@@ -1,22 +1,14 @@
-# Welcome to your Lasya and Avyay's project
-
-## Build with Lovable
-
-Open your project and keep building.
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+# Lasya & Avyay's wedding invitation
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+You need Node.js (or Bun) — [install Node with nvm](https://github.com/nvm-sh/nvm#installing-and-updating) or [install Bun](https://bun.sh).
 
 ```sh
 git clone <this-repository-url>
 cd <repository-name>
-npm i
-npm run dev
+bun install
+bun run dev
 ```
 
 ## Built with
