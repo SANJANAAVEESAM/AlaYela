@@ -87,6 +87,14 @@
   --ivory: oklch(0.965 0.012 80);
   --pearl: oklch(0.985 0.006 84);
   --silver: oklch(0.8 0.01 260);
+
+  /* Opening screen: blush pleated paper with a rose-gold medallion */
+  --blush: oklch(0.905 0.024 22);
+  --blush-deep: oklch(0.842 0.033 17);
+  --blush-light: oklch(0.957 0.012 26);
+  --rose-gold: oklch(0.81 0.05 62);
+  --rose-gold-deep: oklch(0.665 0.055 52);
+  --rose-gold-light: oklch(0.925 0.03 72);
   --silver-deep: oklch(0.66 0.012 260);
 
   --font-display: "Cormorant Garamond", Georgia, serif;
@@ -238,6 +246,26 @@
 
 @utility animate-cta-pulse {
   animation: cta-pulse 3.4s ease-in-out infinite;
+}
+
+/* Party popper: out and up, then tumbling back down under gravity */
+@keyframes confetti-pop {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  22% {
+    transform: translate3d(calc(var(--cx) * 0.45), var(--cpeak), 0)
+      rotate(calc(var(--cr) * 0.35));
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--cx), var(--cfall), 0) rotate(var(--cr));
+    opacity: 0;
+  }
 }
 
 /* Scroll cue — a slow drift down and back, never a hop */
