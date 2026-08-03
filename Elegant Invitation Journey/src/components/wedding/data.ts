@@ -7,7 +7,6 @@ import eventPelli from "@/assets/event-wedding.png";
 import venuePhoto from "@/assets/venue.jpg";
 import palacePhoto from "@/assets/hero-palace.jpg";
 import floralPhoto from "@/assets/closing-floral.jpg";
-import envelopeFloralPhoto from "@/assets/envelope-floral.jpg";
 
 export const COUPLE = { bride: "Lasya", groom: "Avyay" };
 
@@ -176,11 +175,8 @@ export const GALLERY = [
 
 // TODO(content): all detail-card copy below is placeholder.
 export const DETAIL_CARDS = [
-  { title: "Wedding Party", img: floralPhoto, body: "Meet the people standing with us — coming soon." },
   { title: "Accommodation", img: palacePhoto, body: "Room blocks and booking codes — coming soon." },
   { title: "Travel", img: venuePhoto, body: "Airports, trains and getting to Hyderabad — coming soon." },
-  { title: "Dress Codes", img: envelopeFloralPhoto, body: "A closer look at each evening's dress code — coming soon." },
-  { title: "Venue Information", img: venuePhoto, body: "Maps, entrances and parking for each venue — coming soon." },
   { title: "Nearby Hotels", img: palacePhoto, body: "Our favourite places to stay near the venues — coming soon." },
   { title: "Transportation", img: floralPhoto, body: "Shuttle timings between the hotels and venues — coming soon." },
 ];

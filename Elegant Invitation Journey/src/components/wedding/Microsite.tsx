@@ -200,20 +200,17 @@ function Story() {
 
   return (
     <section id="story" className="relative">
-      {/* Pinned: the title holds, the chapter copy cross-fades beneath it */}
+      {/* The invitation inks itself in and lands on "our story", which is why
+          there is no separate heading below — the line above is the title. */}
+      <ScrollReveal />
+
+      {/* Pinned: the chapter copy cross-fades as each print reaches the pile */}
       <div
         ref={headerRef}
         className="sticky top-0 z-30 bg-background px-5 pb-5 text-center"
         style={{ paddingTop: "calc(env(safe-area-inset-top) + 4.5rem)" }}
       >
-        <h2
-          className="font-display leading-none lowercase text-foreground"
-          style={{ fontSize: "clamp(2.5rem, 13vw, 3.3rem)" }}
-        >
-          our story
-        </h2>
-
-        <div className="relative mt-6 min-h-[17rem]">
+        <div className="relative min-h-[17rem]">
           {CHAPTERS.map((chapter, i) => (
             <div
               key={chapter.label}
@@ -225,7 +222,7 @@ function Story() {
                 pointerEvents: i === active ? "auto" : "none",
               }}
             >
-              <h3 className="font-body text-[1.08rem] font-bold lowercase text-foreground">
+              <h3 className="font-display text-[1.4rem] font-semibold lowercase first-letter:uppercase text-foreground">
                 {chapter.label}: {chapter.title}
               </h3>
               <div className="mx-auto mt-3 max-w-[21rem] space-y-2 font-body text-[0.88rem] leading-[1.55] whitespace-pre-line text-muted-foreground">
@@ -362,13 +359,13 @@ function JoinUs() {
         {/* One gap value, so the spacing between every element is identical */}
         <div className="flex flex-col items-center gap-9">
           <p
-            className="font-display leading-tight lowercase text-foreground"
+            className="font-display leading-tight lowercase first-letter:uppercase text-foreground"
             style={{ fontSize: "clamp(2rem, 9.5vw, 2.5rem)" }}
           >
             so please join us…
           </p>
           <p
-            className="font-display leading-tight lowercase text-foreground"
+            className="font-display leading-tight lowercase first-letter:uppercase text-foreground"
             style={{ fontSize: "clamp(2.4rem, 11.5vw, 3rem)" }}
           >
             {WEDDING_DATE_RANGE}
@@ -398,7 +395,7 @@ function EventsSection() {
     >
       <Reveal>
         <h2
-          className="text-center font-display leading-none lowercase text-foreground"
+          className="text-center font-display leading-none lowercase first-letter:uppercase text-foreground"
           style={{ fontSize: "clamp(2.1rem, 10vw, 2.6rem)" }}
         >
           the celebrations
@@ -560,14 +557,14 @@ function DetailCards() {
 
   return (
     <Section id="travel">
-      <h2 className="font-display text-5xl lowercase text-foreground">additional details</h2>
+      <h2 className="font-display text-5xl lowercase first-letter:uppercase text-foreground">additional details</h2>
       <div className="mt-10 grid grid-cols-2 gap-4">
         {DETAIL_CARDS.map((card, i) => (
           <button
             key={card.title}
             type="button"
             onClick={() => setOpenIdx(i)}
-            className={`group relative overflow-hidden rounded-[20px] text-left ${i === 0 ? "col-span-2 aspect-[16/9]" : "aspect-square"}`}
+            className={`group relative overflow-hidden rounded-[20px] text-left ${i === 0 || i === DETAIL_CARDS.length - 1 ? "col-span-2 aspect-[16/9]" : "aspect-square"}`}
             style={{ boxShadow: "var(--shadow-soft)" }}
           >
             <img
@@ -626,7 +623,7 @@ function Faqs() {
   return (
     <Section id="faqs" className="text-center">
       <h2
-        className="font-display leading-none lowercase text-foreground"
+        className="font-display leading-none lowercase first-letter:uppercase text-foreground"
         style={{ fontSize: "clamp(2.4rem, 12vw, 3rem)" }}
       >
         questions?
@@ -730,7 +727,7 @@ function Rsvp() {
         className="rounded-[24px] bg-pearl px-6 py-9 ring-1 ring-[var(--border)]"
         style={{ boxShadow: "var(--shadow-paper)" }}
       >
-        <h2 className="text-center font-display text-4xl lowercase text-foreground">rsvp</h2>
+        <h2 className="text-center font-display text-4xl text-foreground">RSVP</h2>
         <Ornament className="mt-5 mb-8" />
 
         {submitted ? (
@@ -894,8 +891,6 @@ export function Microsite({ live }: { live: boolean }) {
 
       <main className="relative mx-auto w-full max-w-[26rem]">
         <Hero live={live} />
-
-        <ScrollReveal />
 
         <Story />
         <JoinUs />
