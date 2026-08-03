@@ -6,9 +6,9 @@ export function Ornament({ className = "" }: { className?: string }) {
         <path
           d="M12 3c1.8 2.6 4.2 3.6 7 3.6-1.4 2.6-1.4 5.2 0 7.8-2.8 0-5.2 1-7 3.6-1.8-2.6-4.2-3.6-7-3.6 1.4-2.6 1.4-5.2 0-7.8 2.8 0 5.2-1 7-3.6Z"
           stroke="var(--gold)"
-          strokeWidth="0.9"
+          strokeWidth="0.55"
         />
-        <circle cx="12" cy="10.5" r="1.4" fill="var(--gold)" opacity="0.7" />
+        <circle cx="12" cy="10.5" r="1.1" fill="var(--gold)" opacity="0.55" />
       </svg>
       <span className="rule-gold w-16 sm:w-24" />
     </div>

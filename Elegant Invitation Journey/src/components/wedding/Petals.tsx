@@ -6,6 +6,9 @@ const PETALS = Array.from({ length: 14 }, (_, i) => ({
   opacity: 0.35 + (i % 3) * 0.15,
 }));
 
+const COLORS = ["var(--bronze)", "var(--pearl)", "var(--gold)"];
+
+/** Gentle petal fall in cream and bronze — used after RSVP confirmation. */
 export function Petals() {
   return (
     <div className="pointer-events-none fixed inset-0 z-40 overflow-hidden" aria-hidden="true">
@@ -17,7 +20,7 @@ export function Petals() {
             left: `${p.left}%`,
             width: p.size,
             height: p.size * 1.5,
-            background: i % 2 ? "var(--gold)" : "var(--sage)",
+            background: COLORS[i % COLORS.length],
             opacity: p.opacity,
             animation: `petal-fall ${p.duration}s linear ${p.delay}s infinite`,
           }}

@@ -7,11 +7,10 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import coupleBg from "../assets/couple-background.png";
-import { reportLovableError } from "../lib/lovable-error-reporting";
+import ogImage from "../assets/couple.jpg";
 
 
 function NotFoundComponent() {
@@ -39,9 +38,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -78,15 +74,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { title: "Lasya & Avyay" },
+      { name: "description", content: "The wedding of Lasya & Avyay — October 29–31, 2026, Hyderabad." },
+      { property: "og:title", content: "Lasya & Avyay" },
+      { property: "og:description", content: "The wedding of Lasya & Avyay — October 29–31, 2026, Hyderabad." },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: ogImage },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -102,7 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Karla:wght@300;400;500&family=Parisienne&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Karla:wght@300;400;500;600;700&family=Parisienne&display=swap",
       },
     ],
   }),
@@ -131,21 +126,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="relative min-h-screen bg-transparent">
-        {/* Couple background image — visible behind the entire scrolling experience */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none fixed inset-0 -z-20 h-[100dvh] w-[100vw] overflow-hidden"
-        >
-          <img
-            src={coupleBg}
-            alt=""
-            aria-hidden="true"
-            className="h-full w-full object-cover object-center"
-            style={{ opacity: 0.42 }}
-          />
-        </div>
-
+      <div className="relative min-h-screen">
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </div>

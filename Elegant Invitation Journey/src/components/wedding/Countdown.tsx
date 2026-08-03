@@ -11,6 +11,9 @@ function diff() {
   };
 }
 
+const UNITS = ["Days", "Hours", "Minutes", "Seconds"] as const;
+
+/** Cordially-style countdown: big serif numerals, hairline labels, no boxes. */
 export function Countdown() {
   const [t, setT] = useState<ReturnType<typeof diff> | null>(null);
 
@@ -21,18 +24,21 @@ export function Countdown() {
   }, []);
 
   return (
-    <div className="grid grid-cols-4 gap-2 sm:gap-4">
-      {(["Days", "Hours", "Minutes", "Seconds"] as const).map((k) => (
-        <div
-          key={k}
-          className="rounded-sm border border-[var(--gold)]/30 bg-ivory/80 px-1 py-5 text-center"
-          style={{ boxShadow: "var(--shadow-soft)" }}
-        >
-          <div className="font-display text-3xl text-olive tabular-nums sm:text-4xl">
-            {t ? String(t[k]).padStart(2, "0") : "--"}
-          </div>
-          <div className="mt-2 font-body text-[0.55rem] tracking-[0.24em] uppercase text-muted-foreground">
-            {k}
+    <div className="flex items-start justify-center">
+      {UNITS.map((k, i) => (
+        <div key={k} className="flex items-start">
+          {i > 0 && (
+            <span className="mx-1.5 pt-1 font-display text-4xl text-[var(--gold)] sm:mx-2.5" aria-hidden="true">
+              :
+            </span>
+          )}
+          <div className="flex min-w-[3.2rem] flex-col items-center">
+            <span className="font-display text-5xl leading-none text-foreground tabular-nums sm:text-6xl">
+              {t ? String(t[k]).padStart(2, "0") : "--"}
+            </span>
+            <span className="mt-2.5 font-body text-[0.52rem] font-medium tracking-[0.28em] uppercase text-muted-foreground">
+              {k}
+            </span>
           </div>
         </div>
       ))}

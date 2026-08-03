@@ -13,9 +13,8 @@
  * The :root and .dark blocks define the actual color values using oklch.
  * All colors MUST use oklch format.
  *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * Palette: Cordially-style warm editorial cream — ivory paper, espresso ink,
+ * bronze CTAs, champagne gold ornaments, brushed silver foil.
  */
 
 @theme inline {
@@ -63,42 +62,39 @@
 
 :root {
   --radius: 0.25rem;
-  --background: oklch(0.972 0.014 92);
-  --foreground: oklch(0.31 0.028 120);
-  --card: oklch(0.985 0.009 92);
-  --card-foreground: oklch(0.31 0.028 120);
-  --popover: oklch(0.985 0.009 92);
-  --popover-foreground: oklch(0.31 0.028 120);
-  --primary: oklch(0.55 0.055 122);
-  --primary-foreground: oklch(0.978 0.013 92);
-  --secondary: oklch(0.93 0.022 95);
-  --secondary-foreground: oklch(0.38 0.04 122);
-  --muted: oklch(0.94 0.017 95);
-  --muted-foreground: oklch(0.52 0.026 110);
-  --accent: oklch(0.72 0.075 85);
-  --accent-foreground: oklch(0.28 0.03 110);
+  --background: oklch(0.965 0.012 80);
+  --foreground: oklch(0.28 0.02 60);
+  --card: oklch(0.982 0.008 84);
+  --card-foreground: oklch(0.28 0.02 60);
+  --popover: oklch(0.982 0.008 84);
+  --popover-foreground: oklch(0.28 0.02 60);
+  --primary: oklch(0.55 0.09 65);
+  --primary-foreground: oklch(0.975 0.01 84);
+  --secondary: oklch(0.93 0.018 80);
+  --secondary-foreground: oklch(0.32 0.025 60);
+  --muted: oklch(0.94 0.014 80);
+  --muted-foreground: oklch(0.5 0.03 65);
+  --accent: oklch(0.55 0.09 65);
+  --accent-foreground: oklch(0.975 0.01 84);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.88 0.02 95);
-  --input: oklch(0.88 0.02 95);
-  --ring: oklch(0.72 0.075 85);
+  --border: oklch(0.885 0.016 80);
+  --input: oklch(0.885 0.016 80);
+  --ring: oklch(0.55 0.09 65);
 
   --gold: oklch(0.72 0.075 85);
-  --olive: oklch(0.44 0.05 118);
-  --sage: oklch(0.62 0.05 128);
-  --ivory: oklch(0.978 0.013 92);
-  --envelope: oklch(0.55 0.045 130);
-  --envelope-deep: oklch(0.46 0.042 130);
-  --envelope-flap: oklch(0.6 0.048 130);
-  --wax: oklch(0.48 0.16 28);
-  --wax-deep: oklch(0.38 0.14 28);
+  --bronze: oklch(0.55 0.09 65);
+  --ivory: oklch(0.965 0.012 80);
+  --pearl: oklch(0.985 0.006 84);
+  --silver: oklch(0.8 0.01 260);
+  --silver-deep: oklch(0.66 0.012 260);
 
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-script: "Parisienne", cursive;
   --font-body: "Karla", system-ui, sans-serif;
 
-  --shadow-paper: 0 24px 60px -24px oklch(0.31 0.028 120 / 0.35);
-  --shadow-soft: 0 10px 30px -12px oklch(0.31 0.028 120 / 0.22);
+  --shadow-paper: 0 24px 60px -24px oklch(0.28 0.02 60 / 0.3);
+  --shadow-soft: 0 10px 30px -12px oklch(0.28 0.02 60 / 0.18);
   --gradient-gold: linear-gradient(90deg, transparent, var(--gold), transparent);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -117,13 +113,11 @@
 
 @theme inline {
   --color-gold: var(--gold);
-  --color-olive: var(--olive);
-  --color-sage: var(--sage);
+  --color-bronze: var(--bronze);
   --color-ivory: var(--ivory);
-  --color-envelope: var(--envelope);
-  --color-envelope-deep: var(--envelope-deep);
-  --color-envelope-flap: var(--envelope-flap);
-  --color-wax: var(--wax);
+  --color-pearl: var(--pearl);
+  --color-silver: var(--silver);
+  --color-silver-deep: var(--silver-deep);
   --font-display: var(--font-display);
   --font-script: var(--font-script);
   --font-body: var(--font-body);
@@ -170,19 +164,18 @@
   }
 
   body {
-    background-color: transparent;
+    background-color: var(--background);
     color: var(--color-foreground);
     font-family: var(--font-body);
-    font-weight: 600;
+    font-weight: 400;
   }
 
   h1,
   h2,
   h3 {
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 600;
   }
-
 }
 
 @utility rule-gold {
@@ -193,23 +186,89 @@
 @utility eyebrow {
   font-family: var(--font-body);
   font-size: 0.6875rem;
+  font-weight: 500;
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--muted-foreground);
 }
 
 @utility paper {
-  background: color-mix(in oklab, var(--ivory) 90%, transparent);
+  background: color-mix(in oklab, var(--pearl) 92%, transparent);
   box-shadow: var(--shadow-paper);
-  backdrop-filter: blur(10px);
 }
 
-@utility text-shadow-soft {
-  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.6);
+@utility glass {
+  background: color-mix(in srgb, white 70%, transparent);
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
 }
 
-@utility text-shadow-gold {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+/* Brushed-silver foil text — gradient clipped to glyphs with a slow sheen */
+@utility foil-silver {
+  background-image: linear-gradient(110deg, #cfd2d8, #f4f5f7 45%, #b9bdc7);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: foil-sheen 8s ease-in-out infinite;
+}
+
+@keyframes foil-sheen {
+  0%,
+  100% {
+    background-position: 0% 0;
+  }
+  50% {
+    background-position: 100% 0;
+  }
+}
+
+/* Frosted CTA — a slow breath, never a bounce */
+@keyframes cta-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 12px 34px -14px oklch(0.28 0.02 60 / 0.45);
+  }
+  50% {
+    transform: scale(1.022);
+    box-shadow: 0 18px 44px -14px oklch(0.28 0.02 60 / 0.55);
+  }
+}
+
+@utility animate-cta-pulse {
+  animation: cta-pulse 3.4s ease-in-out infinite;
+}
+
+/* Scroll cue — a slow drift down and back, never a hop */
+@keyframes scroll-nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+@utility animate-scroll-nudge {
+  animation: scroll-nudge 2.4s ease-in-out infinite;
+}
+
+/* Light travelling across the silver wax */
+@keyframes wax-shine {
+  0%,
+  100% {
+    transform: translateX(-38%) rotate(8deg);
+    opacity: 0;
+  }
+  45% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(138%) rotate(8deg);
+    opacity: 0;
+  }
 }
 
 @keyframes petal-fall {
@@ -239,4 +298,39 @@
 
 @utility animate-rise {
   animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Hero photo: very slow zoom, halted entirely under prefers-reduced-motion */
+@keyframes hero-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+@utility animate-hero-zoom {
+  animation: hero-zoom 30s ease-in-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-zoom,
+  .animate-scroll-nudge,
+  .animate-cta-pulse,
+  .foil-silver {
+    animation: none;
+  }
+}
+
+/* Scratch flecks — tiny foil particles thrown off while scratching */
+@keyframes fleck {
+  from {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0.9;
+  }
+  to {
+    transform: translate3d(var(--fleck-x, 8px), var(--fleck-y, 26px), 0) rotate(90deg);
+    opacity: 0;
+  }
 }
