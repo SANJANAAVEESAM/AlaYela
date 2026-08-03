@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import storyAirport from "@/assets/story-airport.jpg";
 import storyCamping from "@/assets/story-camping.jpg";
@@ -8,15 +8,19 @@ import {
   CONTACT_EMAIL,
   COUPLE,
   DETAIL_CARDS,
-  EDITORIAL_COPY,
-  EVENTS,
-  FAQS,
+  EVENT_DAYS,
+  FULL_WEDDING_CAL,
   WEDDING_DATE_RANGE,
+  WEDDING_YEAR,
+  TIMING_NOTE,
   WHATSAPP_NUMBER,
-  mapsHref,
+  venueMapsHref,
+  type EventDay,
   type WeddingEvent,
 } from "./data";
 import { AddToCalendar } from "./AddToCalendar";
+import { Confetti } from "./Confetti";
+import { Countdown } from "./Countdown";
 import { FloatingNav } from "./FloatingNav";
 import { Hero } from "./Hero";
 import { Modal } from "./Modal";
@@ -84,120 +88,203 @@ function BotanicalWatermark() {
 
 /* ---------------------------------- story ---------------------------------- */
 
-// TODO(content): captions, if you want any shown in the viewer.
-const STORY_PHOTOS = [
+// TODO(content): captions are drawn from the chapter copy — change freely.
+const CHAPTERS = [
   {
-    src: storyCamping,
-    alt: "Friends gathered around a campfire at sunset, tents and a bridge over the water behind them",
-    rotate: -1.8,
+    label: "Chapter One",
+    title: "The Campfire That Started It All",
+    body: [
+      "What began as a casual camping trip with friends to Deception Pass became the first page of our story. Between endless conversations, laughter around the campfire, and a sky full of stars, two strangers from the same college finally found each other.",
+    ],
+    quote: "Sometimes the best stories begin when nothing is planned.",
+    photos: [
+      {
+        src: storyCamping,
+        caption: "Deception Pass",
+        alt: "Friends gathered around a campfire at sunset, tents and a bridge over the water behind them",
+      },
+    ],
   },
   {
-    src: storyAirport,
-    alt: "The couple holding each other at the airport departures kerb at sunset",
-    rotate: 1.5,
+    label: "Chapter Two",
+    title: "Three Little Words",
+    body: [
+      "A drive to the Seattle airport.\nOne last hug before goodbye.",
+      "He smiled, held her close, and quietly said,",
+      "“I love you.”",
+      "Then he simply walked away.",
+      "She carried those words all the way home…\nand when her heart was ready,",
+      "she said “Yes.”",
+    ],
+    photos: [
+      {
+        src: storyAirport,
+        caption: "Seattle airport",
+        alt: "The couple holding each other at the airport departures kerb at sunset",
+      },
+    ],
   },
   {
-    src: storyOodenny,
-    alt: "The couple on a picnic blanket under a tree, a snow-capped mountain in the distance",
-    rotate: -0.9,
+    label: "Chapter Three",
+    title: "Our Sunday Tradition",
+    body: [
+      "Some love stories are written through grand gestures.",
+      "Ours was written in slow Sunday mornings.",
+      "A picnic mat, a camping chair, a good book, coffee in hand, and Mount Rainier watching over us.",
+      "No plans.\nNo rush.\nJust us.",
+    ],
+    quote: "Home was never a place—it was wherever we were together.",
+    photos: [
+      {
+        src: storyOodenny,
+        caption: "Mount Rainier",
+        alt: "The couple on a picnic blanket under a tree, a snow-capped mountain in the distance",
+      },
+    ],
   },
 ];
 
-/** Pin offset for the deck — clears the pinned heading above it. */
-const CARD_TOP = "46vh";
+/** Every print in running order, each tagged with the chapter it belongs to. */
+const PRINTS = CHAPTERS.flatMap((chapter, ci) =>
+  chapter.photos.map((photo) => ({ ...photo, chapter: ci })),
+);
+
+/** How far each print sits below the one before it in the finished pile. */
+const FAN = 13;
+const TILTS = [-1.6, 1.3, -0.9, 1.7, -1.2, 0.8];
 
 function Story() {
+  const headerRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [deckTop, setDeckTop] = useState(420);
+  const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState<number | null>(null);
-  const count = STORY_PHOTOS.length;
 
+  // The pinned header's height decides where the deck starts, and it changes
+  // with the longest chapter's copy — so measure it rather than guess.
   useEffect(() => {
-    if (lightbox === null) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") setLightbox((i) => (i === null ? i : (i + 1) % count));
-      if (e.key === "ArrowLeft") setLightbox((i) => (i === null ? i : (i - 1 + count) % count));
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [lightbox, count]);
+    const el = headerRef.current;
+    if (!el) return;
+    const measure = () => setDeckTop(el.offsetHeight + 6);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
-  const shown = lightbox !== null ? STORY_PHOTOS[lightbox] : null;
+  // Whichever print has reached the top of the pile owns the chapter copy.
+  useEffect(() => {
+    let frame = 0;
+    const read = () => {
+      let idx = 0;
+      cardRefs.current.forEach((el, i) => {
+        if (el && el.getBoundingClientRect().top <= deckTop + 6) idx = i;
+      });
+      setActive(PRINTS[idx].chapter);
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(read);
+    };
+    read();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [deckTop]);
+
+  const shown = lightbox !== null ? PRINTS[lightbox] : null;
 
   return (
     <section id="story" className="relative">
-      {/* Rises with the scroll, then holds while the deck stacks beneath it.
-          Opaque so cards travelling up are masked rather than showing through. */}
-      <div className="sticky top-0 z-30 bg-background px-5 pt-24 pb-6 text-center">
-        <Reveal>
-          <h2
-            className="font-display leading-[0.95] lowercase text-foreground"
-            style={{ fontSize: "clamp(3rem, 14vw, 3.6rem)" }}
-          >
-            our story
-          </h2>
-          <p className="mt-8 font-body text-[1.12rem] font-bold text-foreground">
-            chapter one: how we met
-          </p>
-          <div className="mx-auto mt-4 max-w-[21rem] space-y-4 font-body text-base leading-relaxed text-muted-foreground">
-            <p>
-              We met in a crowded library in Hyderabad, arguing quietly over the last copy of a
-              book neither of us ended up reading.
-            </p>
-            <p>
-              Nine years, four cities and one very stubborn rescue dog later, we are asking the
-              people we love most to stand with us as we begin the next part.
-            </p>
-          </div>
-        </Reveal>
+      {/* Pinned: the title holds, the chapter copy cross-fades beneath it */}
+      <div
+        ref={headerRef}
+        className="sticky top-0 z-30 bg-background px-5 pb-5 text-center"
+        style={{ paddingTop: "calc(env(safe-area-inset-top) + 4.5rem)" }}
+      >
+        <h2
+          className="font-display leading-none lowercase text-foreground"
+          style={{ fontSize: "clamp(2.5rem, 13vw, 3.3rem)" }}
+        >
+          our story
+        </h2>
+
+        <div className="relative mt-6 min-h-[17rem]">
+          {CHAPTERS.map((chapter, i) => (
+            <div
+              key={chapter.label}
+              aria-hidden={i !== active}
+              className="absolute inset-x-0 top-0"
+              style={{
+                opacity: i === active ? 1 : 0,
+                transition: "opacity 550ms ease",
+                pointerEvents: i === active ? "auto" : "none",
+              }}
+            >
+              <h3 className="font-body text-[1.08rem] font-bold lowercase text-foreground">
+                {chapter.label}: {chapter.title}
+              </h3>
+              <div className="mx-auto mt-3 max-w-[21rem] space-y-2 font-body text-[0.88rem] leading-[1.55] whitespace-pre-line text-muted-foreground">
+                {chapter.body.map((para) => (
+                  <p key={para}>{para}</p>
+                ))}
+              </div>
+              {chapter.quote && (
+                <p className="mx-auto mt-3 max-w-[19rem] font-display text-[1rem] leading-snug text-foreground/75 italic">
+                  “{chapter.quote}”
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Each print pins at the same offset, so the next one rises over the
-          one already parked there. DOM order is the stacking order. */}
-      <div id="gallery" className="px-5">
-        {STORY_PHOTOS.map((photo, i) => (
+      {/* The pile: each print parks a little lower, so the ones already down
+          stay visible as edges above the newest one. */}
+      <div id="gallery" className="px-6">
+        {PRINTS.map((print, i) => (
           <div
-            key={photo.src}
-            className="sticky mx-auto w-[88%]"
-            style={{ top: CARD_TOP, zIndex: 10 + i, marginTop: i === 0 ? "48vh" : "10vh" }}
+            key={print.src}
+            ref={(el) => {
+              cardRefs.current[i] = el;
+            }}
+            className="sticky mx-auto w-[86%]"
+            style={{ top: deckTop + i * FAN, zIndex: 10 + i, marginBottom: "12vh" }}
           >
             <button
               type="button"
               onClick={() => setLightbox(i)}
-              aria-label={`Enlarge photo ${i + 1} of ${count}`}
-              className="block w-full rounded-[14px] bg-pearl p-2.5 transition-transform hover:scale-[1.01]"
-              style={{ transform: `rotate(${photo.rotate}deg)`, boxShadow: "var(--shadow-paper)" }}
+              aria-label={`Enlarge ${print.caption}`}
+              className="block w-full rounded-[18px] bg-pearl p-3 pb-3.5 transition-transform active:scale-[0.99]"
+              style={{
+                transform: `rotate(${TILTS[i % TILTS.length]}deg)`,
+                boxShadow: "0 14px 30px -16px oklch(0.28 0.02 60 / 0.35)",
+              }}
             >
               <img
-                src={photo.src}
-                alt={photo.alt}
-                loading="lazy"
+                src={print.src}
+                alt={print.alt}
+                loading={i === 0 ? "eager" : "lazy"}
                 width={1000}
                 height={750}
-                className="w-full rounded-[8px] object-cover"
+                className="w-full rounded-[10px] object-cover"
                 style={{ aspectRatio: "4 / 3" }}
               />
+              <span className="mt-3 block text-center font-body text-[0.78rem] text-muted-foreground">
+                {print.caption}
+              </span>
             </button>
           </div>
         ))}
       </div>
 
-      {/* Lets the finished stack sit on screen before the section releases */}
-      <div aria-hidden="true" className="h-[46vh]" />
-
       <Modal open={shown !== null} onClose={() => setLightbox(null)} label="Photo viewer">
         {shown && (
-          <div
-            className="flex flex-col items-center gap-5 pt-2 pb-4"
-            onTouchStart={(e) => {
-              const startX = e.touches[0].clientX;
-              const onEnd = (ev: TouchEvent) => {
-                const dx = ev.changedTouches[0].clientX - startX;
-                if (Math.abs(dx) > 48)
-                  setLightbox((i) => (i === null ? i : (i + (dx < 0 ? 1 : count - 1)) % count));
-                window.removeEventListener("touchend", onEnd);
-              };
-              window.addEventListener("touchend", onEnd);
-            }}
-          >
+          <div className="flex flex-col items-center gap-4 pt-2 pb-4">
             <img
               src={shown.src}
               alt={shown.alt}
@@ -206,22 +293,25 @@ function Story() {
               className="w-full rounded-[12px] object-cover"
               style={{ aspectRatio: "4 / 3" }}
             />
+            <p className="font-body text-sm text-muted-foreground">{shown.caption}</p>
             <div className="flex items-center gap-8">
               <button
                 type="button"
                 aria-label="Previous photo"
-                onClick={() => setLightbox((i) => (i === null ? i : (i - 1 + count) % count))}
+                onClick={() =>
+                  setLightbox((i) => (i === null ? i : (i - 1 + PRINTS.length) % PRINTS.length))
+                }
                 className="flex size-10 items-center justify-center rounded-full bg-secondary text-foreground/70"
               >
                 ←
               </button>
               <span className="font-body text-xs text-muted-foreground">
-                {(lightbox ?? 0) + 1} / {count}
+                {(lightbox ?? 0) + 1} / {PRINTS.length}
               </span>
               <button
                 type="button"
                 aria-label="Next photo"
-                onClick={() => setLightbox((i) => (i === null ? i : (i + 1) % count))}
+                onClick={() => setLightbox((i) => (i === null ? i : (i + 1) % PRINTS.length))}
                 className="flex size-10 items-center justify-center rounded-full bg-secondary text-foreground/70"
               >
                 →
@@ -234,133 +324,231 @@ function Story() {
   );
 }
 
-/* ------------------------------ editorial fill ------------------------------ */
+/* ---------------------------------- join us ---------------------------------- */
 
 /**
- * Quiet statement between the story and the schedule. Deliberately static —
- * the scroll-ink treatment belongs to <ScrollReveal /> alone, and running it
- * twice would spend the effect.
+ * The turn toward the schedule: the invitation line, the date and the live
+ * countdown. Confetti fires once per page load, when the guest reaches this.
  */
-function EditorialInterlude() {
+function JoinUs() {
+  const ref = useRef<HTMLElement>(null);
+  const [celebrate, setCelebrate] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        setCelebrate(true);
+      },
+      { threshold: 0.45 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <Section>
-      <p className="font-display text-[1.65rem] leading-snug text-foreground/90">{EDITORIAL_COPY}</p>
-    </Section>
+    <section
+      ref={ref}
+      className="relative w-full overflow-hidden px-6 py-20 text-center"
+    >
+      {celebrate && <Confetti />}
+
+      <Reveal>
+        {/* One gap value, so the spacing between every element is identical */}
+        <div className="flex flex-col items-center gap-9">
+          <p
+            className="font-display leading-tight lowercase text-foreground"
+            style={{ fontSize: "clamp(2rem, 9.5vw, 2.5rem)" }}
+          >
+            so please join us…
+          </p>
+          <p
+            className="font-display leading-tight lowercase text-foreground"
+            style={{ fontSize: "clamp(2.4rem, 11.5vw, 3rem)" }}
+          >
+            {WEDDING_DATE_RANGE}
+          </p>
+          <Countdown />
+        </div>
+      </Reveal>
+    </section>
   );
 }
 
 /* ---------------------------------- events ---------------------------------- */
 
+/** The whole schedule, sized to sit within a single screen — no illustrations. */
 function EventsSection() {
-  const [openSlug, setOpenSlug] = useState<string | null>(null);
-  const active = EVENTS.find((e) => e.slug === openSlug) ?? null;
+  const [open, setOpen] = useState<{ event: WeddingEvent; day: EventDay } | null>(null);
+  const directions = open ? venueMapsHref(open.event.venue) : null;
 
   return (
-    <Section id="events">
-      <h2 className="font-display text-5xl lowercase text-foreground">the celebrations</h2>
-      <p className="mt-3 font-body text-sm text-muted-foreground">
-        Three days · six celebrations · {WEDDING_DATE_RANGE}
-      </p>
+    <section
+      id="events"
+      className="flex min-h-[100dvh] w-full flex-col justify-center px-6"
+      style={{
+        paddingTop: "calc(env(safe-area-inset-top) + 5rem)",
+        paddingBottom: "calc(env(safe-area-inset-bottom) + 2rem)",
+      }}
+    >
+      <Reveal>
+        <h2
+          className="text-center font-display leading-none lowercase text-foreground"
+          style={{ fontSize: "clamp(2.1rem, 10vw, 2.6rem)" }}
+        >
+          the celebrations
+        </h2>
+        <Ornament className="mt-4 mb-8" />
 
-      <div className="mt-10 space-y-6">
-        {EVENTS.map((event) => (
-          <Reveal key={event.slug}>
-            <button
-              type="button"
-              onClick={() => setOpenSlug(event.slug)}
-              className="group w-full overflow-hidden rounded-[24px] bg-pearl text-left ring-1 ring-[var(--border)] transition-shadow hover:shadow-[var(--shadow-paper)]"
-              style={{ boxShadow: "var(--shadow-soft)" }}
-            >
-              <div className="relative aspect-[16/10] w-full overflow-hidden">
-                <img
-                  src={event.img}
-                  alt={`${event.name} illustration`}
-                  loading="lazy"
-                  width={1024}
-                  height={640}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                />
-              </div>
-              <div className="flex items-end justify-between gap-3 px-6 py-5">
-                <div>
-                  <p className="font-body text-[0.55rem] tracking-[0.26em] uppercase text-muted-foreground">
-                    {event.day} · {event.time}
+        {EVENT_DAYS.map((day, d) => (
+          <div key={day.date} className={d ? "mt-7" : ""}>
+            <p className="font-body text-[0.6rem] font-medium tracking-[0.24em] uppercase text-bronze">
+              {day.date} · {day.weekday}
+            </p>
+            <span aria-hidden="true" className="mt-2 mb-3.5 block h-px w-full bg-[var(--border)]" />
+
+            {day.events.map((event, i) => (
+              <div key={event.slug} className={i ? "mt-2.5" : ""}>
+                {event.followsPrevious && (
+                  <p className="mb-2 font-display text-[0.82rem] text-muted-foreground italic">
+                    Followed by
                   </p>
-                  <h3 className="mt-1.5 font-display text-2xl text-foreground">{event.name}</h3>
-                  <p className="font-script text-lg text-bronze">{event.theme}</p>
-                </div>
-                <span
-                  aria-hidden="true"
-                  className="mb-1 flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-lg text-foreground/60 transition-colors group-hover:bg-bronze group-hover:text-primary-foreground"
+                )}
+                <button
+                  type="button"
+                  onClick={() => setOpen({ event, day })}
+                  className="flex w-full items-center gap-3 rounded-xl bg-pearl px-3.5 py-2.5 text-left ring-1 ring-[var(--border)] transition-all hover:ring-[var(--bronze)]/45 active:scale-[0.99]"
+                  style={{ boxShadow: "0 1px 3px oklch(0.28 0.02 60 / 0.07)" }}
+                  aria-label={`${event.name} — see date, venue and dress code`}
                 >
-                  +
-                </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-baseline justify-between gap-2">
+                      <span className="font-display text-[1.1rem] leading-tight text-foreground">
+                        {event.name}
+                      </span>
+                      <span className="shrink-0 font-body text-[0.66rem] tracking-wide text-muted-foreground">
+                        {event.time}
+                      </span>
+                    </span>
+                    {(event.theme || event.dressCode) && (
+                      <span className="mt-1 block font-body text-[0.7rem] leading-snug text-muted-foreground">
+                        {event.theme && <span className="text-bronze italic">{event.theme}</span>}
+                        {event.theme && event.dressCode && (
+                          <span aria-hidden="true" className="mx-1.5 opacity-40">
+                            ·
+                          </span>
+                        )}
+                        {event.dressCode && <span>Dress: {event.dressCode}</span>}
+                      </span>
+                    )}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="flex size-6 shrink-0 items-center justify-center rounded-full bg-bronze/12 font-body text-[0.7rem] text-bronze"
+                  >
+                    ›
+                  </span>
+                </button>
               </div>
-            </button>
-          </Reveal>
+            ))}
+          </div>
         ))}
-      </div>
 
-      <Modal open={active !== null} onClose={() => setOpenSlug(null)} label={active?.name ?? "Event"}>
-        {active && (
-          <div className="pt-2">
-            <img
-              src={active.img}
-              alt=""
-              aria-hidden="true"
-              width={1024}
-              height={640}
-              className="aspect-[16/9] w-full rounded-[16px] object-cover"
-            />
-            <h3 className="mt-5 font-display text-3xl text-foreground">{active.name}</h3>
-            <p className="font-script text-xl text-bronze">{active.theme}</p>
+        <p className="mx-auto mt-8 max-w-[21rem] text-center font-body text-[0.66rem] leading-relaxed text-muted-foreground/80 italic">
+          {TIMING_NOTE}
+        </p>
 
-            <dl className="mt-5 space-y-3 font-body text-sm text-muted-foreground">
+        <div className="mt-5 text-center">
+          <AddToCalendar compact event={FULL_WEDDING_CAL} />
+        </div>
+      </Reveal>
+
+      <Modal open={open !== null} onClose={() => setOpen(null)} label={open?.event.name ?? "Event"}>
+        {open && (
+          <div className="pt-2 pb-4">
+            <h3 className="text-center font-display text-3xl text-foreground">{open.event.name}</h3>
+            {open.event.theme && (
+              <p className="mt-1 text-center font-script text-xl text-bronze">{open.event.theme}</p>
+            )}
+            <Ornament className="mt-5 mb-7" />
+
+            <dl className="space-y-5">
               <div>
-                <dt className="eyebrow text-[0.5rem]">When</dt>
-                <dd className="mt-1">
-                  {active.date} · {active.time}
-                  {active.note && <span className="block text-xs italic opacity-75">{active.note}</span>}
+                <dt className="eyebrow text-[0.5rem]">Date</dt>
+                <dd className="mt-1.5 font-body text-sm text-foreground/85">
+                  {open.day.weekday}, {open.day.date} {WEDDING_YEAR}
                 </dd>
               </div>
+
               <div>
-                <dt className="eyebrow text-[0.5rem]">Dress code</dt>
-                <dd className="mt-1">{active.dressCode}</dd>
+                <dt className="eyebrow text-[0.5rem]">Time</dt>
+                <dd className="mt-1.5 font-body text-sm text-foreground/85">
+                  {open.event.time}
+                  {open.event.tentative && (
+                    <span className="block text-xs text-muted-foreground italic">
+                      Timing may change
+                    </span>
+                  )}
+                </dd>
               </div>
+
               <div>
                 <dt className="eyebrow text-[0.5rem]">Venue</dt>
-                <dd className="mt-1">{active.venueName}</dd>
+                <dd className="mt-1.5 font-body text-sm text-foreground/85">
+                  {open.event.venue.name}
+                </dd>
               </div>
+
+              {open.event.dressCode && (
+                <div>
+                  <dt className="eyebrow text-[0.5rem]">Dress code</dt>
+                  <dd className="mt-1.5 font-body text-sm text-foreground/85">
+                    {open.event.dressCode}
+                  </dd>
+                </div>
+              )}
             </dl>
 
-            <p className="mt-5 font-body text-sm leading-relaxed text-muted-foreground">
-              {active.description}
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-2.5 pb-2">
-              <a
-                href={mapsHref(active.venueQuery)}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center rounded-lg bg-bronze px-5 py-2.5 font-body text-[0.62rem] font-medium tracking-[0.2em] uppercase text-primary-foreground transition-opacity hover:opacity-90"
-              >
-                Open in Maps
-              </a>
+            <div className="mt-8 flex flex-wrap items-center gap-2.5">
+              {directions ? (
+                <a
+                  href={directions}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center rounded-lg bg-bronze px-5 py-2.5 font-body text-[0.62rem] font-medium tracking-[0.2em] uppercase text-primary-foreground transition-opacity hover:opacity-90"
+                >
+                  Open in Maps
+                </a>
+              ) : (
+                <span className="font-body text-xs text-muted-foreground italic">
+                  Directions will appear here once the venue is confirmed.
+                </span>
+              )}
               <AddToCalendar
                 compact
                 event={{
-                  title: `${active.name} — ${COUPLE.bride} & ${COUPLE.groom}`,
-                  description: `${active.description} Theme: ${active.theme}. Dress code: ${active.dressCode}`,
-                  location: active.venueName,
-                  startUtc: active.start.toISOString(),
-                  endUtc: active.end.toISOString(),
+                  title: `${open.event.name} — ${COUPLE.bride} & ${COUPLE.groom}`,
+                  description: [
+                    open.event.theme && `Theme: ${open.event.theme}.`,
+                    open.event.dressCode && `Dress code: ${open.event.dressCode}.`,
+                  ]
+                    .filter(Boolean)
+                    .join(" "),
+                  location: open.event.venue.name,
+                  startUtc: open.event.start.toISOString(),
+                  endUtc: open.event.end.toISOString(),
                 }}
               />
             </div>
           </div>
         )}
       </Modal>
-    </Section>
+    </section>
   );
 }
 
@@ -432,56 +620,27 @@ function DetailCards() {
 /* ----------------------------------- faqs ----------------------------------- */
 
 function Faqs() {
-  const [open, setOpen] = useState<number | null>(0);
   const [contactOpen, setContactOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   return (
-    <Section id="faqs">
-      <h2 className="font-display text-5xl lowercase text-foreground">questions and answers</h2>
-      <p className="mt-4 font-body text-sm text-muted-foreground">
-        Can't find what you're looking for?{" "}
-        <button
-          type="button"
-          onClick={() => setContactOpen(true)}
-          className="text-bronze underline decoration-[var(--gold)] underline-offset-4"
-        >
-          Reach out to {COUPLE.bride} or {COUPLE.groom}
-        </button>
+    <Section id="faqs" className="text-center">
+      <h2
+        className="font-display leading-none lowercase text-foreground"
+        style={{ fontSize: "clamp(2.4rem, 12vw, 3rem)" }}
+      >
+        questions?
+      </h2>
+      <p className="mx-auto mt-5 max-w-[20rem] font-body text-sm leading-relaxed text-muted-foreground">
+        Anything at all about the celebrations — travel, timings, what to wear — just ask us.
       </p>
-
-      <div className="mt-8 divide-y divide-[var(--border)]">
-        {FAQS.map((faq, i) => {
-          const isOpen = open === i;
-          return (
-            <div key={faq.q}>
-              <button
-                type="button"
-                onClick={() => setOpen(isOpen ? null : i)}
-                aria-expanded={isOpen}
-                className="flex w-full items-center justify-between gap-4 py-5 text-left"
-              >
-                <span className="font-display text-lg text-foreground">{faq.q}</span>
-                <span
-                  aria-hidden="true"
-                  className="text-sm text-muted-foreground transition-transform duration-300"
-                  style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
-                >
-                  ⌄
-                </span>
-              </button>
-              <div
-                className="grid transition-[grid-template-rows] duration-400 ease-out"
-                style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
-              >
-                <div className="overflow-hidden">
-                  <p className="pb-5 font-body text-sm leading-relaxed text-muted-foreground">{faq.a}</p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <button
+        type="button"
+        onClick={() => setContactOpen(true)}
+        className="mt-7 rounded-full bg-bronze px-7 py-3.5 font-body text-[0.64rem] font-medium tracking-[0.22em] uppercase text-primary-foreground transition-opacity hover:opacity-90 active:scale-[0.99]"
+      >
+        Reach out to {COUPLE.bride} or {COUPLE.groom}
+      </button>
 
       <Modal open={contactOpen} onClose={() => setContactOpen(false)} label="Contact the couple">
         <div className="flex flex-col items-center gap-5 pt-3 pb-4 text-center">
@@ -519,26 +678,41 @@ const inputClass =
   "w-full rounded-xl border border-[var(--border)] bg-ivory px-4 py-3.5 font-body text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-[var(--bronze)] focus:outline-none";
 
 function Rsvp() {
+  const allEvents = EVENT_DAYS.flatMap((day) => day.events);
+
   const [attending, setAttending] = useState<"yes" | "no" | null>(null);
-  const [error, setError] = useState(false);
+  const [picked, setPicked] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<{ waHref: string } | null>(null);
   const [showPetals, setShowPetals] = useState(false);
+
+  const allPicked = picked.length === allEvents.length;
+
+  const toggle = (slug: string) => {
+    setError(null);
+    setPicked((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
+  };
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const first = String(form.get("first") ?? "").trim();
     const last = String(form.get("last") ?? "").trim();
-    if (!first || !last || !attending) {
-      setError(true);
-      return;
-    }
+
+    if (!first || !last) return setError("Please add your name.");
+    if (!attending) return setError("Please let us know whether you can make it.");
+    if (attending === "yes" && picked.length === 0)
+      return setError("Please choose which celebrations you'll be joining.");
+
     const guests = String(form.get("guests") ?? "1");
     const note = String(form.get("note") ?? "").trim();
+    const coming = allEvents.filter((ev) => picked.includes(ev.slug)).map((ev) => ev.name);
+
     const text = [
       `RSVP — ${first} ${last}`,
-      attending === "yes" ? "Joyfully accepts 🤍" : "Regretfully declines",
-      `Guests: ${guests}`,
+      attending === "yes" ? "Joyfully accepts" : "Regretfully declines",
+      attending === "yes" && `Guests: ${guests}`,
+      attending === "yes" && `Attending: ${coming.join(", ")}`,
       note && `Note: ${note}`,
     ]
       .filter(Boolean)
@@ -552,7 +726,10 @@ function Rsvp() {
   return (
     <Section id="rsvp">
       {showPetals && <Petals />}
-      <div className="rounded-[24px] bg-pearl px-6 py-9 ring-1 ring-[var(--border)]" style={{ boxShadow: "var(--shadow-paper)" }}>
+      <div
+        className="rounded-[24px] bg-pearl px-6 py-9 ring-1 ring-[var(--border)]"
+        style={{ boxShadow: "var(--shadow-paper)" }}
+      >
         <h2 className="text-center font-display text-4xl lowercase text-foreground">rsvp</h2>
         <Ornament className="mt-5 mb-8" />
 
@@ -576,8 +753,8 @@ function Rsvp() {
         ) : (
           <form onSubmit={submit} className="flex flex-col gap-3.5" noValidate>
             <div className="grid grid-cols-2 gap-3">
-              <input name="first" required placeholder="First name" className={inputClass} />
-              <input name="last" required placeholder="Last name" className={inputClass} />
+              <input name="first" placeholder="First name" className={inputClass} />
+              <input name="last" placeholder="Last name" className={inputClass} />
             </div>
 
             {/* Segmented attendance */}
@@ -593,13 +770,14 @@ function Rsvp() {
                   type="button"
                   onClick={() => {
                     setAttending(value);
-                    setError(false);
+                    setError(null);
                   }}
                   aria-pressed={attending === value}
                   className="px-3 py-3.5 font-body text-[0.6rem] font-medium tracking-[0.16em] uppercase transition-colors"
                   style={{
                     background: attending === value ? "var(--bronze)" : "var(--ivory)",
-                    color: attending === value ? "var(--primary-foreground)" : "var(--muted-foreground)",
+                    color:
+                      attending === value ? "var(--primary-foreground)" : "var(--muted-foreground)",
                   }}
                 >
                   {label}
@@ -607,20 +785,89 @@ function Rsvp() {
               ))}
             </div>
 
-            <select name="guests" defaultValue="1" className={inputClass} aria-label="Number of guests">
-              {[1, 2, 3, 4].map((n) => (
-                <option key={n} value={n}>
-                  {n} {n === 1 ? "guest" : "guests"}
-                </option>
-              ))}
-            </select>
+            {/* Which celebrations — only relevant to guests who are coming */}
+            {attending === "yes" && (
+              <fieldset className="mt-1 rounded-xl border border-[var(--border)] px-4 py-4">
+                <legend className="px-1.5 font-body text-[0.58rem] font-medium tracking-[0.22em] uppercase text-bronze">
+                  Which celebrations?
+                </legend>
 
-            <textarea name="note" rows={3} placeholder="A note for the couple (optional)" className={inputClass} />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError(null);
+                    setPicked(allPicked ? [] : allEvents.map((ev) => ev.slug));
+                  }}
+                  className="mt-1 font-body text-[0.68rem] text-muted-foreground underline decoration-[var(--gold)] underline-offset-4 transition-colors hover:text-bronze"
+                >
+                  {allPicked ? "Clear all" : "We're coming to everything"}
+                </button>
+
+                {EVENT_DAYS.map((day) => (
+                  <div key={day.date} className="mt-4">
+                    <p className="font-body text-[0.55rem] font-medium tracking-[0.2em] uppercase text-muted-foreground/70">
+                      {day.date} · {day.weekday}
+                    </p>
+                    <div className="mt-2 flex flex-col gap-1.5">
+                      {day.events.map((ev) => {
+                        const checked = picked.includes(ev.slug);
+                        return (
+                          <label
+                            key={ev.slug}
+                            className="flex cursor-pointer items-center gap-3 rounded-lg bg-ivory px-3 py-2.5 ring-1 transition-colors"
+                            style={{
+                              borderColor: "transparent",
+                              boxShadow: checked
+                                ? "inset 0 0 0 1px var(--bronze)"
+                                : "inset 0 0 0 1px var(--border)",
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              className="peer sr-only"
+                              checked={checked}
+                              onChange={() => toggle(ev.slug)}
+                            />
+                            <span
+                              aria-hidden="true"
+                              className="flex size-[18px] shrink-0 items-center justify-center rounded-[5px] border border-[var(--border)] bg-background text-[11px] leading-none text-transparent transition-colors peer-checked:border-bronze peer-checked:bg-bronze peer-checked:text-primary-foreground peer-focus-visible:ring-2 peer-focus-visible:ring-bronze/50"
+                            >
+                              ✓
+                            </span>
+                            <span className="min-w-0 flex-1 font-display text-[0.98rem] text-foreground">
+                              {ev.name}
+                            </span>
+                            <span className="shrink-0 font-body text-[0.62rem] text-muted-foreground">
+                              {ev.time}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </fieldset>
+            )}
+
+            {attending === "yes" && (
+              <select name="guests" defaultValue="1" className={inputClass} aria-label="Number of guests">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                  <option key={n} value={n}>
+                    {n} {n === 1 ? "guest" : "guests"}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            <textarea
+              name="note"
+              rows={3}
+              placeholder="A note for the couple (optional)"
+              className={inputClass}
+            />
 
             {error && (
-              <p className="text-center font-body text-xs text-destructive">
-                Please add your name and choose whether you can attend.
-              </p>
+              <p className="text-center font-body text-xs text-destructive">{error}</p>
             )}
 
             <button
@@ -651,7 +898,7 @@ export function Microsite({ live }: { live: boolean }) {
         <ScrollReveal />
 
         <Story />
-        <EditorialInterlude />
+        <JoinUs />
         <EventsSection />
         <DetailCards />
         <Faqs />
