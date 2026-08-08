@@ -22,8 +22,8 @@ function inkStyle(progress: number, [start, end]: [number, number]) {
   return {
     color: `rgb(${rgb.join(", ")})`,
     opacity: 0.4 + 0.6 * t,
-    // Scaled back from 1px: Italiana is a finer, higher-contrast face set at a
-    // smaller size than the old Cormorant, so the same blur read as smudged.
+    // Scaled back from 1px: the accent face sits at a smaller size than the
+    // old Cormorant did, so the same blur read as smudged rather than arriving.
     filter: `blur(${(0.75 * (1 - t)).toFixed(2)}px)`,
   };
 }
@@ -47,14 +47,15 @@ export function ScrollReveal() {
           className="w-full text-center font-accent"
           style={{
             // 2.2rem is the chosen size; the vw term only pulls it down on
-            // phones narrower than roughly 380px, where Italiana's wide
+            // phones narrower than roughly 380px, where the wide roman
             // letterforms would otherwise run to the edge.
             fontSize: "clamp(1.85rem, 6.5vw + 0.7rem, 2.2rem)",
-            // Italiana ships a single 400 cut — asking for anything heavier
+            // Marcellus ships a single 400 cut — asking for anything heavier
             // would only get a synthesised fake bold.
             fontWeight: 400,
-            letterSpacing: "0.02em",
-            lineHeight: 1.12,
+            // Both values are the ones auditioned on /fonts, not fresh guesses.
+            letterSpacing: "-0.01em",
+            lineHeight: 1.08,
           }}
         >
           {LINES.map((line, i) => (
