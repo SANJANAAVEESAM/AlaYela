@@ -25,15 +25,40 @@ export const WHATSAPP_NUMBER = "18326686089";
 
 export const CONTACT_EMAIL = "lasyaandavyay@gmail.com";
 
-/**
- * Shared album guests upload their own photos to — a Google Photos shared
- * album link works well, since anyone with the link can add to it without
- * an account. The button stays hidden until this is set.
- */
-// TODO(photos): paste the shared album link here.
-export const PHOTO_UPLOAD_URL: string | undefined = undefined;
-
 import type { EventTheme } from "./eventThemes";
+
+/**
+ * Shared Drive folders guests add their own photos to. Haldi and Mehendi share
+ * one, as supplied by the couple.
+ *
+ * Each folder must be shared so that anyone with the link can *contribute*, not
+ * just view — otherwise the button leads guests to a wall.
+ */
+export const GALLERY_FOLDERS: { label: string; url: string }[] = [
+  {
+    label: "Haldi & Mehendi",
+    url: "https://drive.google.com/drive/folders/1Rb5ErOBBV1mQTkxFFEB5_CsrUfCBRxMI?usp=drive_link",
+  },
+  {
+    label: "Pellikuthuru",
+    url: "https://drive.google.com/drive/folders/1smOuRVF_4XYjHh0zeiK7V9qyUKITsvlJ?usp=drive_link",
+  },
+  {
+    label: "Pellikoduku",
+    url: "https://drive.google.com/drive/folders/1XkwXCSAN68BDPdSGGNjUnxXIWKdX1ue4?usp=drive_link",
+  },
+  {
+    label: "Sangeet & Cocktail Night",
+    url: "https://drive.google.com/drive/folders/120l9T4qSeIYm4RiQ7KfWzW3qdNidNsPr?usp=sharing",
+  },
+  {
+    // TODO(photos): supplied without a label — assumed to be the wedding, being
+    // the only celebration left. Confirm before the invitations go out.
+    label: "Wedding Ceremony",
+    url: "https://drive.google.com/drive/folders/1LRC3mlJclf4CjmCsnI8_ddAj9hBAZj36?usp=drive_link",
+  },
+];
+
 
 /**
  * A dress code the sheet can draw rather than merely state.
@@ -67,6 +92,8 @@ export type WeddingEvent = {
   /** Everything except the muhurtham is provisional. */
   tentative?: boolean;
   dressCode?: DressCode;
+  /** Shared folder for this celebration's photos. */
+  photosUrl?: string;
   /** TODO(content): Mehendi's dress code is an inspiration photo, not text —
    *  drop the image in src/assets and point this at it. */
   dressCodeImage?: string;
@@ -100,6 +127,7 @@ export const EVENT_DAYS: EventDay[] = [
           label: "Solid colours",
           note: "Any colour at all — just keep it one solid block rather than a print.",
         },
+        photosUrl: GALLERY_FOLDERS[0].url,
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 29, 12, 0),
         end: ET(9, 29, 16, 0),
@@ -117,6 +145,7 @@ export const EVENT_DAYS: EventDay[] = [
           label: "Solid colours",
           note: "Any colour at all — just keep it one solid block rather than a print.",
         },
+        photosUrl: GALLERY_FOLDERS[0].url,
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 29, 17, 0),
         end: ET(9, 29, 22, 0),
@@ -134,6 +163,7 @@ export const EVENT_DAYS: EventDay[] = [
         theme: "Vintage",
         time: "9:30 AM onwards",
         tentative: true,
+        photosUrl: GALLERY_FOLDERS[1].url,
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 30, 9, 30),
         end: ET(9, 30, 13, 0),
@@ -149,6 +179,7 @@ export const EVENT_DAYS: EventDay[] = [
           label: "Bling",
           note: "Sequins, shimmer and metallics — the more it catches the light, the better.",
         },
+        photosUrl: GALLERY_FOLDERS[3].url,
         venue: {
           name: "Luxe Event Venue",
           address: "10213 John Adams Rd, Charlotte, NC 28262",
@@ -171,6 +202,7 @@ export const EVENT_DAYS: EventDay[] = [
         theme: "Vintage",
         time: "11:15 AM onwards",
         tentative: true,
+        photosUrl: GALLERY_FOLDERS[2].url,
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 31, 11, 15),
         end: ET(9, 31, 14, 0),
@@ -181,6 +213,7 @@ export const EVENT_DAYS: EventDay[] = [
         themeKey: "telugu",
         theme: "Telugu Elegance",
         time: "Muhurtham: 7:25 PM",
+        photosUrl: GALLERY_FOLDERS[4].url,
         venue: {
           name: "Sweet Magnolia Estate",
           address: "10101 Bailey Rd, Cornelius, NC 28031",
@@ -215,13 +248,7 @@ export const FULL_WEDDING_CAL = {
   endUtc: ET(9, 31, 23, 0).toISOString(),
 };
 
-export const GALLERY = [
-  { caption: "The first monsoon", rotate: -3 },
-  { caption: "Coorg, 2023", rotate: 2 },
-  { caption: "She said yes", rotate: -1.5 },
-];
-
-export type DetailIcon = "bed" | "plane" | "hotel" | "car";
+export type DetailIcon = "bed" | "plane" | "camera" | "car";
 
 // TODO(content): hotel names, rates, booking codes and shuttle timings still
 // need to be filled in by the couple — the copy below says so plainly rather
@@ -232,6 +259,8 @@ export const DETAIL_CARDS: {
   body: string;
   /** Appends the full venue list, with directions, under the copy. */
   venues?: boolean;
+  /** Appends the shared photo folders under the copy. */
+  gallery?: boolean;
 }[] = [
   {
     title: "Accommodation",
@@ -244,9 +273,10 @@ export const DETAIL_CARDS: {
     body: "Charlotte Douglas International (CLT) is the closest airport and the easiest arrival for almost everyone. It's a major hub, so most guests will find a direct flight.\n\nFrom the airport it's roughly half an hour to the venues, traffic depending. Rental cars, Uber and Lyft are all easy to find at CLT, and we'd suggest a car — the venues are a little spread out and not walkable from one another.",
   },
   {
-    title: "Nearby Hotels",
-    icon: "hotel",
-    body: "For the Sangeet at Luxe Event Venue, look around University City in north-east Charlotte. For the wedding at Sweet Magnolia Estate, Cornelius and Huntersville sit closest.\n\nOnce our room blocks are confirmed we'll list the specific hotels here with booking links.",
+    title: "Gallery",
+    icon: "camera",
+    body: "Every celebration has its own shared folder. Add the photos you take, and look through everyone else's.",
+    gallery: true,
   },
   {
     title: "Transportation",

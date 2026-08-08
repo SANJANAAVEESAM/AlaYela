@@ -11,7 +11,7 @@ import {
   type DetailIcon,
   EVENT_DAYS,
   FULL_WEDDING_CAL,
-  PHOTO_UPLOAD_URL,
+  GALLERY_FOLDERS,
   WEDDING_DATE_RANGE,
   WEDDING_YEAR,
   TIMING_NOTE,
@@ -726,12 +726,11 @@ function EventsSection() {
 
               {/* No per-event calendar button: the one under the schedule adds
                   all three days at once, which is what guests actually want.
-                  The photo-album button appears only once there is a link to
-                  point it at — an empty promise is worse than saying nothing. */}
-              {PHOTO_UPLOAD_URL && (
+                  Each celebration links to its own shared folder. */}
+              {open.event.photosUrl && (
                 <div className="mt-10 flex flex-col items-center gap-3">
                   <a
-                    href={PHOTO_UPLOAD_URL}
+                    href={open.event.photosUrl}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-2 rounded-xl border border-[var(--gold)]/45 bg-ivory px-7 py-3.5 font-body text-[0.66rem] font-medium tracking-[0.24em] uppercase text-bronze transition-all hover:shadow-md active:scale-[0.98]"
@@ -773,11 +772,11 @@ const DETAIL_ICONS: Record<DetailIcon, ReactNode> = {
       <path d="M17 22l4 7 3-5" />
     </g>
   ),
-  hotel: (
+  camera: (
     <g {...iconStroke}>
-      <path d="M10 31V6h20v25M30 31V14h9v17M6 31h38" />
-      <path d="M15 12h3M22 12h3M15 18h3M22 18h3M34 20h2M34 25h2" />
-      <path d="M18 31v-6h4v6" />
+      <path d="M4 13.5a2.5 2.5 0 0 1 2.5-2.5H13l2.6-3.6h16.8L35 11h6.5a2.5 2.5 0 0 1 2.5 2.5v14a2.5 2.5 0 0 1-2.5 2.5h-35A2.5 2.5 0 0 1 4 27.5v-14z" />
+      <circle cx="24" cy="20.5" r="6.4" />
+      <path d="M37.5 16h2.5" />
     </g>
   ),
   car: (
@@ -870,6 +869,7 @@ function DetailCards() {
               </p>
 
               {active.venues && <VenueList />}
+              {active.gallery && <GalleryList />}
             </div>
           </div>
         )}
@@ -952,6 +952,43 @@ function VenueList() {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/** One row per shared folder, in the order the celebrations happen. */
+function GalleryList() {
+  return (
+    <div className="mx-auto mt-8 max-w-[20rem] text-left">
+      <p className="mb-1 font-body text-[0.58rem] font-medium tracking-[0.26em] uppercase text-muted-foreground">
+        Shared folders
+      </p>
+
+      {GALLERY_FOLDERS.map((folder, i) => (
+        <div
+          key={folder.url}
+          className="flex items-center justify-between gap-3 py-3.5"
+          style={{
+            borderTop:
+              i === 0 ? "none" : "1px solid color-mix(in oklab, var(--gold) 28%, transparent)",
+          }}
+        >
+          <p className="min-w-0 font-display text-[1.15rem] leading-tight font-semibold text-ink-strong">
+            {folder.label}
+          </p>
+
+          <a
+            href={folder.url}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Open the shared photo folder for ${folder.label}`}
+            className="shrink-0 rounded-full px-3.5 py-2 font-body text-[0.62rem] font-medium tracking-[0.14em] uppercase transition-opacity hover:opacity-90"
+            style={{ background: "var(--bronze)", color: "var(--primary-foreground)" }}
+          >
+            Open
+          </a>
+        </div>
+      ))}
     </div>
   );
 }
