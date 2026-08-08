@@ -3,8 +3,6 @@ import { COUPLE } from "./data";
 import { startMusic } from "@/lib/music";
 import backdrop from "@/assets/backdrop.jpg";
 
-const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
-
 function Rule({ flip = false }: { flip?: boolean }) {
   return (
     <svg
@@ -24,34 +22,28 @@ function Rule({ flip = false }: { flip?: boolean }) {
 
 /**
  * Scene 1 — the couple's illustration behind frosted glass, with the monogram
- * over it. Tapping clears the frost, brings the picture into focus, then lifts
- * the veil away.
+ * over it.
  *
- * The image settles at the same scale and weight the site's fixed backdrop
- * uses, so the handoff to the hero reads as one continuous shot rather than a
- * cut between two screens.
+ * Deliberately still: tapping hands straight over to the hero, and the overlay
+ * in index.tsx cross-fades the two. There is no clearing or focusing sequence
+ * in between — the guest should reach the invitation, not watch an animation.
+ *
+ * The illustration sits at scale 1, exactly where the page's fixed backdrop
+ * sits, so it stays registered through the cross-fade and only the frost and
+ * monogram dissolve.
  */
 export function Envelope({ onOpened }: { onOpened: () => void }) {
-  const [stage, setStage] = useState(0);
-  const timers = useRef<number[]>([]);
+  const [opening, setOpening] = useState(false);
+  const timer = useRef<number | undefined>(undefined);
 
-  useEffect(() => () => timers.current.forEach(clearTimeout), []);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
 
   const open = () => {
-    if (stage !== 0) return;
+    if (opening) return;
+    setOpening(true);
     startMusic();
-
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const s = reduced ? 0.3 : 1;
-    setStage(1); // frost clears, picture drifts into place
-    timers.current = [
-      window.setTimeout(() => setStage(2), 1250 * s), // veil lifts
-      window.setTimeout(onOpened, 2050 * s),
-    ];
+    timer.current = window.setTimeout(onOpened, 80);
   };
-
-  const clearing = stage >= 1;
-  const lifting = stage >= 2;
 
   return (
     <div
@@ -66,20 +58,11 @@ export function Envelope({ onOpened }: { onOpened: () => void }) {
         }
       }}
       className="relative h-full w-full overflow-hidden outline-none"
-      style={{ cursor: stage === 0 ? "pointer" : "default" }}
+      style={{ cursor: opening ? "default" : "pointer" }}
     >
-      {/* Solid until the veil lifts. The frost above is only partly opaque, so
-          without this the page behind shows through at first paint — before the
-          illustration has decoded — and reads as a flash of the site. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0"
-        style={{
-          background: "var(--background)",
-          transition: "opacity 700ms ease",
-          opacity: lifting ? 0 : 1,
-        }}
-      />
+      {/* Opaque base: the frost above is only partly opaque, so without this the
+          page shows through before the illustration has decoded. */}
+      <div aria-hidden="true" className="absolute inset-0" style={{ background: "var(--background)" }} />
 
       <img
         src={backdrop}
@@ -88,35 +71,20 @@ export function Envelope({ onOpened }: { onOpened: () => void }) {
         width={653}
         height={1000}
         className="absolute inset-0 h-full w-full object-cover object-center"
-        style={{
-          // Ends at scale 1 and roughly the weight the site's backdrop carries,
-          // so nothing jumps when the overlay finally clears.
-          transition: `transform 1900ms ${EASE}, opacity 800ms ease`,
-          transform: clearing ? "scale(1)" : "scale(1.12)",
-          opacity: lifting ? 0.42 : 1,
-        }}
       />
 
       {/* The frost */}
       <div
+        aria-hidden="true"
         className="absolute inset-0"
         style={{
-          backdropFilter: `blur(${clearing ? 0 : 20}px) saturate(${clearing ? 1 : 0.85})`,
-          WebkitBackdropFilter: `blur(${clearing ? 0 : 20}px)`,
-          background: `color-mix(in oklab, var(--background) ${lifting ? 52 : clearing ? 20 : 68}%, transparent)`,
-          transition: "backdrop-filter 1200ms ease, background 900ms ease",
+          backdropFilter: "blur(20px) saturate(0.85)",
+          WebkitBackdropFilter: "blur(20px)",
+          background: "color-mix(in oklab, var(--background) 68%, transparent)",
         }}
       />
 
-      <div
-        className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-        style={{
-          paddingBottom: "8%",
-          transition: `opacity 800ms ease, transform 1100ms ${EASE}`,
-          opacity: lifting ? 0 : 1,
-          transform: lifting ? "translateY(-9%)" : "none",
-        }}
-      >
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3" style={{ paddingBottom: "8%" }}>
         <Rule />
         <p
           className="font-monogram leading-none text-bronze"
@@ -142,10 +110,9 @@ export function Envelope({ onOpened }: { onOpened: () => void }) {
         className="absolute inset-x-0 flex justify-center"
         style={{
           bottom: "calc(env(safe-area-inset-bottom) + 7vh)",
-          transition: "opacity 400ms ease, transform 400ms ease",
-          opacity: stage === 0 ? 1 : 0,
-          transform: stage === 0 ? "translateY(0)" : "translateY(10px)",
-          pointerEvents: stage === 0 ? "auto" : "none",
+          transition: "opacity 250ms ease",
+          opacity: opening ? 0 : 1,
+          pointerEvents: opening ? "none" : "auto",
         }}
       >
         <span className="glass animate-cta-pulse rounded-full px-9 py-4 ring-1 ring-white/70">

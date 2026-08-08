@@ -41,7 +41,7 @@ function Index() {
 
   const handleOpened = () => {
     setRevealed(true);
-    window.setTimeout(() => setOverlayGone(true), 650);
+    window.setTimeout(() => setOverlayGone(true), 500);
   };
 
   return (
@@ -50,7 +50,7 @@ function Index() {
       {!overlayGone && (
         <div
           className="fixed inset-0 z-50"
-          style={{ transition: "opacity 600ms ease", opacity: revealed ? 0 : 1 }}
+          style={{ transition: "opacity 450ms ease", opacity: revealed ? 0 : 1 }}
         >
           <Envelope onOpened={handleOpened} />
         </div>
