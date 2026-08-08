@@ -93,6 +93,8 @@
   --font-script: "Parisienne", cursive;
   --font-monogram: "Pinyon Script", cursive;
   --font-body: "Karla", system-ui, sans-serif;
+  /* Airy display serif, used for the invitation's opening lines. */
+  --font-accent: "Italiana", "Cormorant Garamond", Georgia, serif;
 
   --shadow-paper: 0 24px 60px -24px oklch(0.28 0.02 60 / 0.3);
   --shadow-soft: 0 10px 30px -12px oklch(0.28 0.02 60 / 0.18);
@@ -123,6 +125,7 @@
   --font-script: var(--font-script);
   --font-monogram: var(--font-monogram);
   --font-body: var(--font-body);
+  --font-accent: var(--font-accent);
 }
 
 .dark {

@@ -22,7 +22,9 @@ function inkStyle(progress: number, [start, end]: [number, number]) {
   return {
     color: `rgb(${rgb.join(", ")})`,
     opacity: 0.4 + 0.6 * t,
-    filter: `blur(${(1 - t).toFixed(2)}px)`,
+    // Scaled back from 1px: Italiana is a finer, higher-contrast face set at a
+    // smaller size than the old Cormorant, so the same blur read as smudged.
+    filter: `blur(${(0.75 * (1 - t)).toFixed(2)}px)`,
   };
 }
 
@@ -42,8 +44,18 @@ export function ScrollReveal() {
           inside this box becomes dead space before the next section can start. */}
       <div className="sticky top-0 flex h-[72dvh] items-center justify-center px-[5%]">
         <p
-          className="w-full text-center font-display leading-[1.0]"
-          style={{ fontSize: "clamp(2.4rem, 12vw, 3.1rem)", letterSpacing: "-0.015em", fontWeight: 600 }}
+          className="w-full text-center font-accent"
+          style={{
+            // 2.2rem is the chosen size; the vw term only pulls it down on
+            // phones narrower than roughly 380px, where Italiana's wide
+            // letterforms would otherwise run to the edge.
+            fontSize: "clamp(1.85rem, 6.5vw + 0.7rem, 2.2rem)",
+            // Italiana ships a single 400 cut — asking for anything heavier
+            // would only get a synthesised fake bold.
+            fontWeight: 400,
+            letterSpacing: "0.02em",
+            lineHeight: 1.12,
+          }}
         >
           {LINES.map((line, i) => (
             <span key={line} className="block" style={inkStyle(progress, RAMPS[i])}>
