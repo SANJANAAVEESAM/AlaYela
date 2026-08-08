@@ -98,7 +98,7 @@ function BotanicalWatermark() {
 const CHAPTERS = [
   {
     label: "Chapter One",
-    title: "The Campfire That Started It All",
+    title: "The Beginning",
     body: [
       "What began as a casual camping trip with friends to Deception Pass became the first page of our story. Between endless conversations, laughter around the campfire, and a sky full of stars, two strangers from the same college finally found each other.",
     ],
@@ -543,7 +543,7 @@ function EventsSection() {
                 type="button"
                 onClick={() => setDayIdx(i)}
                 aria-pressed={on}
-                className="rounded-full px-4 py-2.5 font-body text-[0.66rem] font-medium tracking-[0.12em] uppercase transition-colors"
+                className="rounded-full px-5 py-3 font-body text-[0.82rem] font-semibold tracking-[0.08em] uppercase transition-colors"
                 style={{
                   background: on ? "var(--bronze)" : "color-mix(in oklab, var(--ivory) 62%, transparent)",
                   color: on ? "var(--primary-foreground)" : "var(--muted-foreground)",
@@ -606,8 +606,16 @@ function EventsSection() {
               <span className="relative block">
                 {/* Name and theme only — time, venue and dress code live in the
                     sheet behind "View details". */}
-                <span className="block font-display text-2xl text-foreground">{event.name}</span>
+                <span className="block font-display text-[1.6rem] font-bold tracking-[0.01em] text-foreground">
+                  {event.name}
+                </span>
                 {event.theme && <span className="mt-1 block font-script text-lg text-bronze">{event.theme}</span>}
+
+                {event.dressCode && (
+                  <span className="mx-auto mt-2.5 block max-w-[17rem] font-body text-[0.68rem] leading-snug text-muted-foreground">
+                    {event.dressCode}
+                  </span>
+                )}
 
                 <span aria-hidden="true" className="rule-gold mx-auto mt-4 mb-4 block w-16" />
 
@@ -1236,7 +1244,7 @@ export function Microsite({ live }: { live: boolean }) {
               We can't wait to celebrate with you
             </p>
             <p className="mt-8 font-body text-[0.6rem] tracking-[0.3em] uppercase text-muted-foreground">
-              {COUPLE.bride} & {COUPLE.groom} · October 29–31
+              {COUPLE.bride} & {COUPLE.groom}
             </p>
           </Reveal>
         </section>
