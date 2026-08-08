@@ -812,7 +812,7 @@ function DetailCards() {
 
   return (
     <>
-      <Section id="travel">
+      <Section id="details">
       <h2
         className="text-center font-display leading-none lowercase first-letter:uppercase text-foreground"
         style={{ fontSize: "clamp(2.1rem, 10vw, 2.6rem)" }}
