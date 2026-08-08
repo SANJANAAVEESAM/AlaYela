@@ -35,6 +35,18 @@ export const PHOTO_UPLOAD_URL: string | undefined = undefined;
 
 import type { EventTheme } from "./eventThemes";
 
+/**
+ * A dress code the sheet can draw rather than merely state.
+ *
+ * `kind` selects the swatch row: a spread of hues for "solids", metallics for
+ * "bling". Only the three events that actually have a code carry one.
+ */
+export type DressCode = {
+  kind: "solids" | "bling";
+  label: string;
+  note?: string;
+};
+
 export type Venue = {
   name: string;
   /** Street or area line shown under the venue name. */
@@ -54,7 +66,7 @@ export type WeddingEvent = {
   time: string;
   /** Everything except the muhurtham is provisional. */
   tentative?: boolean;
-  dressCode?: string;
+  dressCode?: DressCode;
   /** TODO(content): Mehendi's dress code is an inspiration photo, not text —
    *  drop the image in src/assets and point this at it. */
   dressCodeImage?: string;
@@ -83,7 +95,11 @@ export const EVENT_DAYS: EventDay[] = [
         theme: "Carnival",
         time: "12:00 PM onwards",
         tentative: true,
-        dressCode: "Yellows and florals — wear something you don't mind turmeric on",
+        dressCode: {
+          kind: "solids",
+          label: "Solid colours",
+          note: "Any colour at all — just keep it one solid block rather than a print.",
+        },
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 29, 12, 0),
         end: ET(9, 29, 16, 0),
@@ -96,7 +112,11 @@ export const EVENT_DAYS: EventDay[] = [
         time: "5:00 PM onwards",
         tentative: true,
         followsPrevious: true,
-        dressCode: "Bright colours — sleeves you can push past the elbow",
+        dressCode: {
+          kind: "solids",
+          label: "Solid colours",
+          note: "Any colour at all — just keep it one solid block rather than a print.",
+        },
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 29, 17, 0),
         end: ET(9, 29, 22, 0),
@@ -114,7 +134,6 @@ export const EVENT_DAYS: EventDay[] = [
         theme: "Vintage",
         time: "9:30 AM onwards",
         tentative: true,
-        dressCode: "Anything except sarees",
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 30, 9, 30),
         end: ET(9, 30, 13, 0),
@@ -125,7 +144,11 @@ export const EVENT_DAYS: EventDay[] = [
         themeKey: "masquerade",
         theme: "Bling • Masquerade Ball",
         time: "6:00 PM onwards",
-        dressCode: "Bling / Sequins",
+        dressCode: {
+          kind: "bling",
+          label: "Bling",
+          note: "Sequins, shimmer and metallics — the more it catches the light, the better.",
+        },
         venue: {
           name: "Luxe Event Venue",
           address: "10213 John Adams Rd, Charlotte, NC 28262",
@@ -148,7 +171,6 @@ export const EVENT_DAYS: EventDay[] = [
         theme: "Vintage",
         time: "11:15 AM onwards",
         tentative: true,
-        dressCode: "Traditional Indian — kurta, lehenga or saree",
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 31, 11, 15),
         end: ET(9, 31, 14, 0),
@@ -159,7 +181,6 @@ export const EVENT_DAYS: EventDay[] = [
         themeKey: "telugu",
         theme: "Telugu Elegance",
         time: "Muhurtham: 7:25 PM",
-        dressCode: "Traditional Telugu — pattu sarees, silks and sherwanis",
         venue: {
           name: "Sweet Magnolia Estate",
           address: "10101 Bailey Rd, Cornelius, NC 28031",

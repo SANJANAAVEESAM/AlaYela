@@ -23,6 +23,7 @@ import {
 import { AddToCalendar } from "./AddToCalendar";
 import { Confetti } from "./Confetti";
 import { Countdown } from "./Countdown";
+import { DressCodeArt } from "./DressCodeArt";
 import { FloatingNav } from "./FloatingNav";
 import { Hero } from "./Hero";
 import { Modal } from "./Modal";
@@ -703,9 +704,13 @@ function EventsSection() {
                 )}
 
                 {open.event.dressCode && (
-                  <p className="font-body text-sm" style={{ color: look?.inkSoft }}>
-                    {open.event.dressCode}
-                  </p>
+                  <div className="pt-1">
+                    <DressCodeArt
+                      dressCode={open.event.dressCode}
+                      ink={look?.ink}
+                      inkSoft={look?.inkSoft}
+                    />
+                  </div>
                 )}
               </div>
 
