@@ -167,13 +167,24 @@ const TILTS = [-1.6, 1.3, -0.9, 1.7, -1.2, 0.8];
 const HANDOVER = 300;
 /** How far the copy drifts as it leaves, in px. */
 const SLIDE = 34;
+/**
+ * The run-out at the end of the deck, in px. Once the last print has parked it
+ * stops moving against the viewport, so the closing chapter has nothing left to
+ * follow — this measures the deck's remaining room instead and lets chapter
+ * three leave the way the others did, rather than blinking out when the sticky
+ * header lets go.
+ */
+const EXIT = 340;
 
 function Story() {
   const headerRef = useRef<HTMLDivElement>(null);
+  const deckRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [deckTop, setDeckTop] = useState(420);
   /** Fractional position through the prints — 1.4 means print 1, 40% of the way to 2. */
   const [pos, setPos] = useState(0);
+  /** 0 while the deck holds, rising to 1 as it runs out and the copy leaves. */
+  const [exit, setExit] = useState(0);
   const [lightbox, setLightbox] = useState<number | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
 
@@ -214,6 +225,13 @@ function Story() {
       // The first print is already parked when the deck opens, so the running
       // total sits one ahead of the index we want.
       setPos(Math.max(0, p - 1));
+
+      // How close the deck is to giving up its sticky hold.
+      const deck = deckRef.current;
+      if (deck) {
+        const room = deck.getBoundingClientRect().bottom - deckTop;
+        setExit(Math.min(1, Math.max(0, (EXIT - room) / EXIT)));
+      }
     };
     const onScroll = () => {
       cancelAnimationFrame(frame);
@@ -247,10 +265,26 @@ function Story() {
    */
   const chapterMotion = (i: number) => {
     const drift = reducedMotion ? 0 : SLIDE;
-    if (leaving === arriving) return { opacity: i === leaving ? 1 : 0, shift: 0 };
-    if (i === leaving) return { opacity: 1 - frac, shift: -drift * frac };
-    if (i === arriving) return { opacity: frac, shift: drift * (1 - frac) };
-    return { opacity: 0, shift: 0 };
+
+    let opacity: number;
+    let shift: number;
+    if (leaving === arriving) {
+      opacity = i === leaving ? 1 : 0;
+      shift = 0;
+    } else if (i === leaving) {
+      opacity = 1 - frac;
+      shift = -drift * frac;
+    } else if (i === arriving) {
+      opacity = frac;
+      shift = drift * (1 - frac);
+    } else {
+      opacity = 0;
+      shift = 0;
+    }
+
+    // The run-out at the end of the deck. Only ever non-zero once the last
+    // print has parked, so in practice this is the closing chapter leaving.
+    return { opacity: opacity * (1 - exit), shift: shift - drift * exit };
   };
 
   return (
@@ -317,7 +351,7 @@ function Story() {
 
       {/* The pile: each print parks a little lower, so the ones already down
           stay visible as edges above the newest one. */}
-      <div id="gallery" className="px-6">
+      <div id="gallery" ref={deckRef} className="px-6">
         {PRINTS.map((print, i) => (
           <div
             key={print.src}
@@ -440,8 +474,15 @@ function JoinUs() {
         {/* One gap value, so the spacing between every element is identical */}
         <div className="flex flex-col items-center gap-9">
           <p
-            className="font-display leading-tight lowercase first-letter:uppercase text-foreground"
-            style={{ fontSize: "clamp(2rem, 9.5vw, 2.5rem)" }}
+            className="font-accent leading-snug text-foreground"
+            style={{
+              // 1.8rem chosen on /fonts; the vw term only eases it down on
+              // phones too narrow to hold the line in two.
+              fontSize: "clamp(1.45rem, 5.4vw + 0.6rem, 1.8rem)",
+              // Marcellus ships one cut only — see ScrollReveal.
+              fontWeight: 400,
+              letterSpacing: "-0.01em",
+            }}
           >
             Be part of our beautiful beginning
           </p>
