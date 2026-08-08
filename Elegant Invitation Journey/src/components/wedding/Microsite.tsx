@@ -907,8 +907,12 @@ function VenueList() {
             }}
           >
             <div className="min-w-0">
-              <p className="font-body text-[0.56rem] font-medium tracking-[0.18em] uppercase text-muted-foreground">
-                {day.date.replace(" October", " Oct")} · {event.name}
+              {/* The date stays quiet so the bold event name reads as the label
+                  for the venue below, rather than the two competing. */}
+              <p className="font-body text-[0.58rem] tracking-[0.18em] uppercase text-muted-foreground">
+                {day.date.replace(" October", " Oct")}
+                <span aria-hidden="true"> · </span>
+                <span className="font-bold text-foreground/75">{event.name}</span>
               </p>
 
               {/* The venue is what this list is for, so it is the loudest line. */}
