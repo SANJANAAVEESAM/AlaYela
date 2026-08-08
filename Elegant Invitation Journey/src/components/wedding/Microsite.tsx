@@ -611,12 +611,6 @@ function EventsSection() {
                 </span>
                 {event.theme && <span className="mt-1 block font-script text-lg text-bronze">{event.theme}</span>}
 
-                {event.dressCode && (
-                  <span className="mx-auto mt-2.5 block max-w-[17rem] font-body text-[0.68rem] leading-snug text-muted-foreground">
-                    {event.dressCode}
-                  </span>
-                )}
-
                 <span aria-hidden="true" className="rule-gold mx-auto mt-4 mb-4 block w-16" />
 
                 <span className="inline-flex items-center gap-1.5 font-body text-[0.62rem] font-medium tracking-[0.16em] uppercase text-bronze">
