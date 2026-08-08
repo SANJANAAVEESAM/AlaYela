@@ -506,6 +506,13 @@ function JoinUs() {
 /* ---------------------------------- events ---------------------------------- */
 
 /**
+ * How far the artwork wash is pulled back behind the event cards. Applied as a
+ * single multiplier rather than folded into each event's own cardOpacity, so
+ * the values tuned against the artwork keep their relationship to one another.
+ */
+const WASH = 0.45;
+
+/**
  * The schedule, one day at a time. Tabs keep it to a single screen while still
  * giving each event room, and every card opens a sheet with the full details.
  */
@@ -570,9 +577,10 @@ function EventsSection() {
               aria-label={`${event.name} — see date, venue and dress code`}
               className="relative overflow-hidden rounded-2xl px-6 py-7 text-center transition-all active:scale-[0.99]"
               style={{
-                // Warm and translucent rather than a white panel, so the
-                // illustration behind the page still reads through it.
-                background: "color-mix(in oklab, var(--ivory) 68%, transparent)",
+                // Near-solid rather than translucent: the artwork wash below
+                // supplies the warmth, and a see-through ground on top of it
+                // left the event names muddy.
+                background: "color-mix(in oklab, var(--ivory) 94%, transparent)",
                 backdropFilter: "blur(3px)",
                 WebkitBackdropFilter: "blur(3px)",
                 border: "1px solid color-mix(in oklab, var(--gold) 34%, transparent)",
@@ -597,7 +605,7 @@ function EventsSection() {
                   loading="lazy"
                   className="pointer-events-none absolute inset-0 h-full w-full object-cover"
                   style={{
-                    opacity: EVENT_THEMES[event.themeKey].cardOpacity ?? 0.2,
+                    opacity: (EVENT_THEMES[event.themeKey].cardOpacity ?? 0.2) * WASH,
                     objectPosition: EVENT_THEMES[event.themeKey].cardPosition ?? "center bottom",
                   }}
                 />
@@ -607,14 +615,16 @@ function EventsSection() {
               <span className="relative block">
                 {/* Name and theme only — time, venue and dress code live in the
                     sheet behind "View details". */}
-                <span className="block font-display text-[1.6rem] font-bold tracking-[0.01em] text-foreground">
+                <span className="block font-display text-[1.6rem] font-bold tracking-[0.01em] text-ink-strong">
                   {event.name}
                 </span>
-                {event.theme && <span className="mt-1 block font-script text-lg text-bronze">{event.theme}</span>}
+                {event.theme && (
+                  <span className="mt-1 block font-script text-lg text-bronze-deep">{event.theme}</span>
+                )}
 
                 <span aria-hidden="true" className="rule-gold mx-auto mt-4 mb-4 block w-16" />
 
-                <span className="inline-flex items-center gap-1.5 font-body text-[0.62rem] font-medium tracking-[0.16em] uppercase text-bronze">
+                <span className="inline-flex items-center gap-1.5 font-body text-[0.62rem] font-medium tracking-[0.16em] uppercase text-bronze-deep">
                   View details <span aria-hidden="true">→</span>
                 </span>
               </span>

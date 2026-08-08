@@ -84,6 +84,10 @@
 
   --gold: oklch(0.72 0.075 85);
   --bronze: oklch(0.55 0.09 65);
+  /* For type sitting over an event card's artwork wash, where the
+     ordinary foreground and bronze lose contrast against the image. */
+  --ink-strong: oklch(0.15 0.015 60);
+  --bronze-deep: oklch(0.4 0.1 62);
   --ivory: oklch(0.965 0.012 80);
   --pearl: oklch(0.985 0.006 84);
   --silver: oklch(0.8 0.01 260);
@@ -117,6 +121,8 @@
 @theme inline {
   --color-gold: var(--gold);
   --color-bronze: var(--bronze);
+  --color-ink-strong: var(--ink-strong);
+  --color-bronze-deep: var(--bronze-deep);
   --color-ivory: var(--ivory);
   --color-pearl: var(--pearl);
   --color-silver: var(--silver);
