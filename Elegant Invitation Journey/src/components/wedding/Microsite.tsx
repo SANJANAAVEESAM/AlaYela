@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import storyAirport from "@/assets/story-airport.jpg";
 import storyCamping from "@/assets/story-camping.jpg";
@@ -8,8 +8,10 @@ import {
   CONTACT_EMAIL,
   COUPLE,
   DETAIL_CARDS,
+  type DetailIcon,
   EVENT_DAYS,
   FULL_WEDDING_CAL,
+  PHOTO_UPLOAD_URL,
   WEDDING_DATE_RANGE,
   WEDDING_YEAR,
   TIMING_NOTE,
@@ -29,6 +31,8 @@ import { Ornament } from "./Ornament";
 import { Petals } from "./Petals";
 import { Reveal } from "./Reveal";
 import { ScrollReveal } from "./ScrollReveal";
+import { EVENT_THEMES, EventScenery } from "./eventThemes";
+import { copyText } from "@/lib/clipboard";
 
 /* ---------------------------------- shell ---------------------------------- */
 
@@ -178,7 +182,10 @@ function Story() {
     const read = () => {
       let idx = 0;
       cardRefs.current.forEach((el, i) => {
-        if (el && el.getBoundingClientRect().top <= deckTop + 6) idx = i;
+        // Each print parks at its own height in the fan, so compare against
+        // that rather than one shared line — otherwise only the first print
+        // ever registers and the copy never leaves chapter one.
+        if (el && el.getBoundingClientRect().top <= deckTop + i * FAN + 6) idx = i;
       });
       setActive(PRINTS[idx].chapter);
     };
@@ -203,6 +210,12 @@ function Story() {
       {/* The invitation inks itself in and lands on "our story", which is why
           there is no separate heading below — the line above is the title. */}
       <ScrollReveal />
+
+      {/* Scroll target for the menu's Story link. Landing here pins the header
+          and parks the first print, so chapter one arrives fully composed —
+          the sticky header itself cannot be a target, since once stuck it
+          reports the top of the viewport rather than its place in the page. */}
+      <span id="chapter-one" aria-hidden="true" className="block" />
 
       {/* Pinned: the chapter copy cross-fades as each print reaches the pile */}
       <div
@@ -284,6 +297,12 @@ function Story() {
             </button>
           </div>
         ))}
+
+        {/* Holds the finished pile on screen. The prints stay stuck only while
+            this container has room left, and the last one has just its own
+            margin — without this the third overlap flashes past while the
+            second is held for a full card's worth of scrolling. */}
+        <div aria-hidden="true" className="h-[42vh]" />
       </div>
 
       <Modal open={shown !== null} onClose={() => setLightbox(null)} label="Photo viewer">
@@ -394,6 +413,8 @@ function EventsSection() {
   const [dayIdx, setDayIdx] = useState(0);
   const [open, setOpen] = useState<{ event: WeddingEvent; day: EventDay } | null>(null);
   const directions = open ? venueMapsHref(open.event.venue) : null;
+  const look = open ? EVENT_THEMES[open.event.themeKey] : null;
+  const accent = look?.accent;
   const activeDay = EVENT_DAYS[dayIdx];
 
   return (
@@ -487,76 +508,122 @@ function EventsSection() {
         </div>
       </Reveal>
 
-      <Modal open={open !== null} onClose={() => setOpen(null)} label={open?.event.name ?? "Event"}>
+      <Modal
+        open={open !== null}
+        onClose={() => setOpen(null)}
+        label={open?.event.name ?? "Event"}
+        variant="full"
+        panelStyle={look?.surface}
+        backdrop={open ? <EventScenery theme={open.event.themeKey} /> : null}
+      >
         {open && (
-          <div className="pt-2 pb-4">
-            <h3 className="text-center font-display text-3xl text-foreground">{open.event.name}</h3>
-            {open.event.theme && (
-              <p className="mt-1 text-center font-script text-xl text-bronze">{open.event.theme}</p>
-            )}
-            <Ornament className="mt-5 mb-7" />
-
-            <dl className="space-y-5">
-              <div>
-                <dt className="eyebrow text-[0.5rem]">Date</dt>
-                <dd className="mt-1.5 font-body text-sm text-foreground/85">
-                  {open.day.weekday}, {open.day.date} {WEDDING_YEAR}
-                </dd>
+          <div
+            className="relative flex min-h-full flex-col pt-6 pb-4 text-center"
+            style={{ color: look?.ink }}
+          >
+            <div className="my-auto w-full">
+              <div className="relative w-full">
+                <h3 className="font-display text-[2.1rem] leading-tight">{open.event.name}</h3>
+                {open.event.theme && (
+                  <p className="mt-1 font-script text-2xl" style={{ color: accent }}>
+                    {open.event.theme}
+                  </p>
+                )}
+                <span
+                  aria-hidden="true"
+                  className="mx-auto mt-5 mb-8 block h-px w-24"
+                  style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+                />
               </div>
 
-              <div>
-                <dt className="eyebrow text-[0.5rem]">Time</dt>
-                <dd className="mt-1.5 font-body text-sm text-foreground/85">
-                  {open.event.time}
-                  {open.event.tentative && (
-                    <span className="block text-xs text-muted-foreground italic">Timing may change</span>
-                  )}
-                </dd>
-              </div>
-
-              <div>
-                <dt className="eyebrow text-[0.5rem]">Venue</dt>
-                <dd className="mt-1.5 font-body text-sm text-foreground/85">{open.event.venue.name}</dd>
-              </div>
-
-              {open.event.dressCode && (
+              <dl className="space-y-6 text-left">
                 <div>
-                  <dt className="eyebrow text-[0.5rem]">Dress code</dt>
-                  <dd className="mt-1.5 font-body text-sm text-foreground/85">{open.event.dressCode}</dd>
+                  <dt className="eyebrow text-[0.5rem]" style={{ color: accent }}>Date</dt>
+                  <dd className="mt-1.5 font-display text-lg">
+                    {open.day.weekday}, {open.day.date} {WEDDING_YEAR}
+                  </dd>
                 </div>
-              )}
-            </dl>
 
-            <div className="mt-8 flex flex-wrap items-center gap-2.5">
-              {directions ? (
-                <a
-                  href={directions}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center rounded-lg bg-bronze px-5 py-2.5 font-body text-[0.62rem] font-medium tracking-[0.2em] uppercase text-primary-foreground transition-opacity hover:opacity-90"
-                >
-                  Open in Maps
-                </a>
-              ) : (
-                <span className="font-body text-xs text-muted-foreground italic">
-                  Directions will appear here once the venue is confirmed.
-                </span>
-              )}
-              <AddToCalendar
-                compact
-                event={{
-                  title: `${open.event.name} — ${COUPLE.bride} & ${COUPLE.groom}`,
-                  description: [
-                    open.event.theme && `Theme: ${open.event.theme}.`,
-                    open.event.dressCode && `Dress code: ${open.event.dressCode}.`,
-                  ]
-                    .filter(Boolean)
-                    .join(" "),
-                  location: open.event.venue.name,
-                  startUtc: open.event.start.toISOString(),
-                  endUtc: open.event.end.toISOString(),
-                }}
-              />
+                <div>
+                  <dt className="eyebrow text-[0.5rem]" style={{ color: accent }}>Time</dt>
+                  <dd className="mt-1.5 font-display text-lg">
+                    {open.event.time}
+                    {open.event.tentative && (
+                      <span className="block font-body text-xs italic" style={{ color: look?.inkSoft }}>
+                        Timing may change
+                      </span>
+                    )}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt className="eyebrow text-[0.5rem]" style={{ color: accent }}>Venue</dt>
+                  <dd className="mt-1.5 font-display text-lg">{open.event.venue.name}</dd>
+                </div>
+
+                <div>
+                  <dt className="eyebrow text-[0.5rem]" style={{ color: accent }}>Location</dt>
+                  <dd className="mt-1.5">
+                    {directions ? (
+                      <a
+                        href={directions}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 font-body text-sm underline underline-offset-4"
+                        style={{ color: accent, textDecorationColor: accent }}
+                      >
+                        {open.event.venue.address ?? "Open in Maps"}
+                        <span aria-hidden="true">↗</span>
+                      </a>
+                    ) : (
+                      <span className="font-body text-sm italic" style={{ color: look?.inkSoft }}>
+                        A map will appear here once the venue is confirmed.
+                      </span>
+                    )}
+                  </dd>
+                </div>
+
+                {open.event.dressCode && (
+                  <div>
+                    <dt className="eyebrow text-[0.5rem]" style={{ color: accent }}>Dress code</dt>
+                    <dd className="mt-1.5 font-body text-sm leading-relaxed">
+                      {open.event.dressCode}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+
+              <div className="mt-10 flex flex-col items-center gap-3">
+                <AddToCalendar
+                  event={{
+                    title: `${open.event.name} — ${COUPLE.bride} & ${COUPLE.groom}`,
+                    description: [
+                      open.event.theme && `Theme: ${open.event.theme}.`,
+                      open.event.dressCode && `Dress code: ${open.event.dressCode}.`,
+                    ]
+                      .filter(Boolean)
+                      .join(" "),
+                    location: open.event.venue.name,
+                    startUtc: open.event.start.toISOString(),
+                    endUtc: open.event.end.toISOString(),
+                  }}
+                />
+
+                {PHOTO_UPLOAD_URL ? (
+                  <a
+                    href={PHOTO_UPLOAD_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-xl border border-[var(--gold)]/45 bg-ivory px-7 py-3.5 font-body text-[0.66rem] font-medium tracking-[0.24em] uppercase text-bronze transition-all hover:shadow-md active:scale-[0.98]"
+                  >
+                    Share your photos
+                  </a>
+                ) : (
+                  <p className="max-w-[19rem] font-body text-xs leading-relaxed italic" style={{ color: look?.inkSoft }}>
+                    A shared album for your own photos will appear here closer to the day.
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -567,42 +634,96 @@ function EventsSection() {
 
 /* ------------------------------ detail cards ------------------------------ */
 
+const iconStroke = {
+  fill: "none",
+  stroke: "var(--gold)",
+  strokeWidth: 1.1,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+};
+
+/** Gold line drawings, one per card — nothing photographic. */
+const DETAIL_ICONS: Record<DetailIcon, ReactNode> = {
+  bed: (
+    <g {...iconStroke}>
+      <path d="M4 26V8M4 26h40v-8a5 5 0 0 0-5-5H20v13" />
+      <path d="M44 26v4M4 26v4" />
+      <circle cx="12" cy="17" r="3.4" />
+    </g>
+  ),
+  plane: (
+    <g {...iconStroke}>
+      <path d="M3 21l42-12M3 21l8 4 6-3M45 9l-9 15-5-9" />
+      <path d="M17 22l4 7 3-5" />
+    </g>
+  ),
+  hotel: (
+    <g {...iconStroke}>
+      <path d="M10 31V6h20v25M30 31V14h9v17M6 31h38" />
+      <path d="M15 12h3M22 12h3M15 18h3M22 18h3M34 20h2M34 25h2" />
+      <path d="M18 31v-6h4v6" />
+    </g>
+  ),
+  car: (
+    <g {...iconStroke}>
+      <path d="M5 24v-6l4-8h22l6 8h5v6" />
+      <path d="M5 24h4M19 24h10M39 24h4" />
+      <circle cx="14" cy="24" r="4" />
+      <circle cx="34" cy="24" r="4" />
+      <path d="M12 10v8M24 10v8" />
+    </g>
+  ),
+};
+
+function DetailIconArt({ icon, className = "h-10 w-auto" }: { icon: DetailIcon; className?: string }) {
+  return (
+    <svg viewBox="0 0 48 34" className={className} aria-hidden="true">
+      {DETAIL_ICONS[icon]}
+    </svg>
+  );
+}
+
 function DetailCards() {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const active = openIdx !== null ? DETAIL_CARDS[openIdx] : null;
 
   return (
     <Section id="travel">
-      <h2 className="font-display text-5xl lowercase first-letter:uppercase text-foreground">additional details</h2>
-      <div className="mt-10 grid grid-cols-2 gap-4">
+      <h2
+        className="text-center font-display leading-none lowercase first-letter:uppercase text-foreground"
+        style={{ fontSize: "clamp(2.1rem, 10vw, 2.6rem)" }}
+      >
+        additional details
+      </h2>
+      <Ornament className="mt-4 mb-8" />
+
+      <div className="grid grid-cols-2 gap-3.5">
         {DETAIL_CARDS.map((card, i) => (
           <button
             key={card.title}
             type="button"
             onClick={() => setOpenIdx(i)}
-            className={`group relative overflow-hidden rounded-[20px] text-left ${i === 0 || i === DETAIL_CARDS.length - 1 ? "col-span-2 aspect-[16/9]" : "aspect-square"}`}
-            style={{ boxShadow: "var(--shadow-soft)" }}
+            className="relative flex flex-col items-center justify-center gap-3 rounded-2xl px-4 py-7 text-center transition-transform active:scale-[0.99]"
+            style={{
+              background: "color-mix(in oklab, var(--ivory) 68%, transparent)",
+              backdropFilter: "blur(3px)",
+              WebkitBackdropFilter: "blur(3px)",
+              border: "1px solid color-mix(in oklab, var(--gold) 34%, transparent)",
+              boxShadow: "0 10px 26px -16px oklch(0.32 0.03 60 / 0.4)",
+            }}
           >
-            <img
-              src={card.img}
-              alt=""
+            <span
               aria-hidden="true"
-              loading="lazy"
-              width={800}
-              height={800}
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+              className="absolute inset-x-0 top-0 h-px"
+              style={{ background: "var(--gradient-gold)" }}
             />
-            <div
-              aria-hidden="true"
-              className="absolute inset-0"
-              style={{ background: "linear-gradient(180deg, transparent 30%, oklch(0.25 0.02 60 / 0.55) 100%)" }}
-            />
-            <span className="absolute bottom-4 left-4 max-w-[75%] font-display text-lg leading-tight text-pearl">
+            <DetailIconArt icon={card.icon} />
+            <span className="block font-display text-[1.25rem] leading-tight lowercase first-letter:uppercase text-foreground">
               {card.title}
             </span>
             <span
               aria-hidden="true"
-              className="absolute right-3 bottom-3 flex size-8 items-center justify-center rounded-full bg-pearl/85 text-base text-foreground/70"
+              className="absolute top-3 right-3 flex size-7 items-center justify-center rounded-full bg-bronze/12 text-[0.85rem] text-bronze"
             >
               +
             </span>
@@ -612,17 +733,15 @@ function DetailCards() {
 
       <Modal open={active !== null} onClose={() => setOpenIdx(null)} label={active?.title ?? "Details"}>
         {active && (
-          <div className="pt-2 pb-4">
-            <img
-              src={active.img}
-              alt=""
-              aria-hidden="true"
-              width={800}
-              height={450}
-              className="aspect-[16/9] w-full rounded-[16px] object-cover"
-            />
-            <h3 className="mt-5 font-display text-3xl text-foreground">{active.title}</h3>
-            <p className="mt-3 font-body text-sm leading-relaxed text-muted-foreground">{active.body}</p>
+          <div className="pt-2 pb-4 text-center">
+            <DetailIconArt icon={active.icon} className="mx-auto h-12 w-auto" />
+            <h3 className="mt-4 font-display text-3xl lowercase first-letter:uppercase text-foreground">
+              {active.title}
+            </h3>
+            <Ornament className="mt-4 mb-5" />
+            <p className="mx-auto max-w-[20rem] font-body text-sm leading-relaxed text-muted-foreground">
+              {active.body}
+            </p>
           </div>
         )}
       </Modal>
@@ -634,7 +753,7 @@ function DetailCards() {
 
 function Faqs() {
   const [contactOpen, setContactOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<"idle" | "done" | "failed">("idle");
 
   return (
     <Section id="faqs" className="text-center">
@@ -662,15 +781,13 @@ function Faqs() {
           <div className="flex gap-2.5">
             <button
               type="button"
-              onClick={() => {
-                navigator.clipboard?.writeText(CONTACT_EMAIL).then(() => {
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                });
+              onClick={async () => {
+                setCopied((await copyText(CONTACT_EMAIL)) ? "done" : "failed");
+                setTimeout(() => setCopied("idle"), 2400);
               }}
               className="rounded-lg border border-[var(--silver)]/60 bg-ivory px-5 py-2.5 font-body text-[0.62rem] font-medium tracking-[0.2em] uppercase text-foreground/80"
             >
-              {copied ? "Copied ✓" : "Copy email"}
+              {copied === "done" ? "Copied ✓" : copied === "failed" ? "Copy failed" : "Copy email"}
             </button>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
@@ -717,6 +834,9 @@ function Rsvp() {
     if (attending === "yes" && picked.length === 0)
       return setError("Please choose which celebrations you'll be joining.");
 
+    const from = String(form.get("from") ?? "").trim();
+    if (attending === "yes" && !from) return setError("Please tell us where you'll be travelling from.");
+
     const guests = String(form.get("guests") ?? "1");
     const note = String(form.get("note") ?? "").trim();
     const coming = allEvents.filter((ev) => picked.includes(ev.slug)).map((ev) => ev.name);
@@ -725,6 +845,7 @@ function Rsvp() {
       `RSVP — ${first} ${last}`,
       attending === "yes" ? "Joyfully accepts" : "Regretfully declines",
       attending === "yes" && `Guests: ${guests}`,
+      attending === "yes" && `Travelling from: ${from}`,
       attending === "yes" && `Attending: ${coming.join(", ")}`,
       note && `Note: ${note}`,
     ]
@@ -860,6 +981,16 @@ function Rsvp() {
                   </div>
                 ))}
               </fieldset>
+            )}
+
+            {attending === "yes" && (
+              <input
+                name="from"
+                placeholder="Travelling from (city)"
+                autoComplete="address-level2"
+                className={inputClass}
+                onChange={() => setError(null)}
+              />
             )}
 
             {attending === "yes" && (

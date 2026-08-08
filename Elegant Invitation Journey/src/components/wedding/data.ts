@@ -1,12 +1,3 @@
-import eventHaldi from "@/assets/event-haldi.png";
-import eventMehendi from "@/assets/event-mehendi.png";
-import eventSangeet from "@/assets/event-cocktail.png";
-import eventPelliKuthuru from "@/assets/event-pelli-kuthuru.png";
-import eventPelliKoduku from "@/assets/event-vratam.png";
-import eventPelli from "@/assets/event-wedding.png";
-import venuePhoto from "@/assets/venue.jpg";
-import palacePhoto from "@/assets/hero-palace.jpg";
-import floralPhoto from "@/assets/closing-floral.jpg";
 
 export const COUPLE = { bride: "Lasya", groom: "Avyay" };
 
@@ -21,14 +12,25 @@ export const WEDDING_DATE_RANGE = `October 29–31, ${WEDDING_YEAR}`;
 // TODO(phone): replace with the couple's real WhatsApp number (country code, no +).
 export const WHATSAPP_NUMBER = "919000000000";
 
-// TODO(content): replace with a real contact email.
-export const CONTACT_EMAIL = "lasyaandavyay@example.com";
+export const CONTACT_EMAIL = "lasyaandavyay@gmail.com";
+
+/**
+ * Shared album guests upload their own photos to — a Google Photos shared
+ * album link works well, since anyone with the link can add to it without
+ * an account. The button stays hidden until this is set.
+ */
+// TODO(photos): paste the shared album link here.
+export const PHOTO_UPLOAD_URL: string | undefined = undefined;
+
+import type { EventTheme } from "./eventThemes";
 
 const IST = (month: number, day: number, hour: number, minute: number) =>
   new Date(Date.UTC(WEDDING_YEAR, month, day, hour - 5, minute - 30));
 
 export type Venue = {
   name: string;
+  /** Street or area line shown under the venue name. */
+  address?: string;
   /** A full Google Maps share link. Wins over mapsQuery when present. */
   mapsUrl?: string;
   /** Fallback: a search string. Directions stay hidden until one is set. */
@@ -39,6 +41,8 @@ export type WeddingEvent = {
   slug: string;
   name: string;
   theme?: string;
+  /** Drives the accent and motif on the event's full-page details. */
+  themeKey: EventTheme;
   time: string;
   /** Everything except the muhurtham is provisional. */
   tentative?: boolean;
@@ -49,7 +53,6 @@ export type WeddingEvent = {
   /** Renders a "Followed by" link to the event above it. */
   followsPrevious?: boolean;
   venue: Venue;
-  img: string;
   start: Date;
   end: Date;
 };
@@ -68,23 +71,23 @@ export const EVENT_DAYS: EventDay[] = [
       {
         slug: "haldi",
         name: "Haldi",
+        themeKey: "carnival",
         theme: "Carnival",
         time: "12:00 PM onwards",
         tentative: true,
         venue: { name: "To be announced" }, // TODO(venue)
-        img: eventHaldi,
         start: IST(9, 29, 12, 0),
         end: IST(9, 29, 16, 0),
       },
       {
         slug: "mehendi",
         name: "Mehendi",
+        themeKey: "mehendi",
         theme: "Carnival",
         time: "5:00 PM onwards",
         tentative: true,
         followsPrevious: true,
         venue: { name: "To be announced" }, // TODO(venue)
-        img: eventMehendi,
         start: IST(9, 29, 17, 0),
         end: IST(9, 29, 22, 0),
       },
@@ -97,23 +100,28 @@ export const EVENT_DAYS: EventDay[] = [
       {
         slug: "pellikuthuru",
         name: "Pellikuthuru",
+        themeKey: "pellikuthuru",
         theme: "Vintage",
         time: "9:30 AM onwards",
         tentative: true,
         dressCode: "Anything except sarees",
         venue: { name: "To be announced" }, // TODO(venue)
-        img: eventPelliKuthuru,
         start: IST(9, 30, 9, 30),
         end: IST(9, 30, 13, 0),
       },
       {
         slug: "sangeet",
         name: "Sangeet & Cocktail Night",
+        themeKey: "masquerade",
         theme: "Bling • Masquerade Ball",
         time: "6:00 PM onwards",
         dressCode: "Bling / Sequins",
-        venue: { name: "To be announced" }, // TODO(venue)
-        img: eventSangeet,
+        venue: {
+          name: "Luxe Event Venue",
+          address: "10213 John Adams Rd, Charlotte, NC 28262",
+          mapsUrl:
+            "https://maps.google.com/maps/place//data=!4m2!3m1!1s0x88541d7fe97a02a5:0x54f177497cd295da?entry=s&sa=X&ved=2ahUKEwiV4qiysf6VAxWyj4kEHTiHF2IQ4kB6BAgEEAA&hl=en",
+        },
         start: IST(9, 30, 18, 0),
         end: IST(9, 31, 0, 0),
       },
@@ -126,21 +134,26 @@ export const EVENT_DAYS: EventDay[] = [
       {
         slug: "pellikoduku",
         name: "Pellikoduku",
+        themeKey: "pellikoduku",
         theme: "Vintage",
         time: "11:15 AM onwards",
         tentative: true,
         venue: { name: "To be announced" }, // TODO(venue)
-        img: eventPelliKoduku,
         start: IST(9, 31, 11, 15),
         end: IST(9, 31, 14, 0),
       },
       {
         slug: "wedding",
         name: "Wedding Ceremony",
+        themeKey: "telugu",
         theme: "Telugu Elegance",
         time: "Muhurtham: 7:25 PM",
-        venue: { name: "To be announced" }, // TODO(venue)
-        img: eventPelli,
+        venue: {
+          name: "Sweet Magnolia Estate",
+          address: "10101 Bailey Rd, Cornelius, NC 28031",
+          mapsUrl:
+            "https://maps.google.com/maps/place//data=!4m2!3m1!1s0x8856a90c1f2caa73:0xcc55dd654a58f67d?entry=s&sa=X&ved=2ahUKEwirvNPhsf6VAxX238kDHdhBNe4Q4kB6BAgVEAA&hl=en",
+        },
         start: IST(9, 31, 19, 25),
         end: IST(9, 31, 23, 59),
       },
@@ -175,10 +188,12 @@ export const GALLERY = [
   { caption: "She said yes", rotate: -1.5 },
 ];
 
+export type DetailIcon = "bed" | "plane" | "hotel" | "car";
+
 // TODO(content): all detail-card copy below is placeholder.
-export const DETAIL_CARDS = [
-  { title: "Accommodation", img: palacePhoto, body: "Room blocks and booking codes — coming soon." },
-  { title: "Travel", img: venuePhoto, body: "Airports, trains and getting to Hyderabad — coming soon." },
-  { title: "Nearby Hotels", img: palacePhoto, body: "Our favourite places to stay near the venues — coming soon." },
-  { title: "Transportation", img: floralPhoto, body: "Shuttle timings between the hotels and venues — coming soon." },
+export const DETAIL_CARDS: { title: string; icon: DetailIcon; body: string }[] = [
+  { title: "Accommodation", icon: "bed", body: "Room blocks and booking codes — coming soon." },
+  { title: "Travel", icon: "plane", body: "Airports, trains and getting to Hyderabad — coming soon." },
+  { title: "Nearby Hotels", icon: "hotel", body: "Our favourite places to stay near the venues — coming soon." },
+  { title: "Transportation", icon: "car", body: "Shuttle timings between the hotels and venues — coming soon." },
 ];
