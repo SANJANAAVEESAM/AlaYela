@@ -491,7 +491,7 @@ function JoinUs() {
           </p>
           <p
             className="font-display leading-tight lowercase first-letter:uppercase text-foreground"
-            style={{ fontSize: "clamp(2.4rem, 11.5vw, 3rem)" }}
+            style={{ fontSize: "clamp(1.8rem, 8vw, 2.15rem)" }}
           >
             {WEDDING_DATE_RANGE}
           </p>

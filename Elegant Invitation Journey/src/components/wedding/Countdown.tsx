@@ -28,15 +28,15 @@ export function Countdown() {
       {UNITS.map((k, i) => (
         <div key={k} className="flex items-start">
           {i > 0 && (
-            <span className="mx-1.5 pt-1 font-display text-4xl text-[var(--gold)] sm:mx-2.5" aria-hidden="true">
+            <span className="mx-1 pt-0.5 font-display text-2xl text-[var(--gold)] sm:mx-2" aria-hidden="true">
               :
             </span>
           )}
           <div className="flex min-w-[3.2rem] flex-col items-center">
-            <span className="font-display text-5xl leading-none text-foreground tabular-nums sm:text-6xl">
+            <span className="font-display text-[2.1rem] leading-none text-foreground tabular-nums sm:text-4xl">
               {t ? String(t[k]).padStart(2, "0") : "--"}
             </span>
-            <span className="mt-2.5 font-body text-[0.52rem] font-medium tracking-[0.28em] uppercase text-muted-foreground">
+            <span className="mt-2 font-body text-[0.46rem] font-medium tracking-[0.24em] uppercase text-muted-foreground">
               {k}
             </span>
           </div>
