@@ -1077,7 +1077,7 @@ function Faqs() {
                     Call
                   </a>
                   <a
-                    href={`https://wa.me/${person.tel.replace(/\D/g, "")}`}
+                    href={`https://wa.me/${(person.whatsapp ?? person.tel).replace(/\D/g, "")}`}
                     target="_blank"
                     rel="noreferrer"
                     aria-label={`Message ${person.name} on WhatsApp`}

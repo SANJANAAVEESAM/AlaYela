@@ -26,12 +26,23 @@ export const WHATSAPP_NUMBER = "18326686089";
 export const CONTACT_EMAIL = "lasyaandavyay@gmail.com";
 
 /**
- * Who to call. `tel` is digits only so the dialler accepts it; `display` is
- * what a guest reads.
+ * Who to call. `tel` is the number that rings; `whatsapp` is only set when the
+ * account lives on a different number, as Avyay's does — sending Chat to the
+ * calling number would reach nobody.
  */
-export const CONTACTS = [
+export const CONTACTS: {
+  name: string;
+  tel: string;
+  display: string;
+  whatsapp?: string;
+}[] = [
   { name: COUPLE.bride, tel: "+18326689442", display: "+1 832 668 9442" },
-  { name: COUPLE.groom, tel: "+17049066859", display: "+1 704 906 6859" },
+  {
+    name: COUPLE.groom,
+    tel: "+17049066859",
+    display: "+1 704 906 6859",
+    whatsapp: "+919550634521",
+  },
 ];
 
 import type { EventTheme } from "./eventThemes";
