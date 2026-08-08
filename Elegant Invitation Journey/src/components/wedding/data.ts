@@ -284,7 +284,7 @@ export const DETAIL_CARDS: {
   {
     title: "Venues",
     icon: "pin",
-    body: "Where each celebration is held. Tap any address for directions.\n\nPlan on driving or booking a ride — Uber and Lyft cover the whole area reliably.",
+    body: "Where each celebration is held. Tap any address for directions.",
     venues: true,
   },
 ];
