@@ -10,10 +10,10 @@ const RAMPS: [number, number][] = [
 ];
 
 const UNINKED = [201, 197, 190]; // #C9C5BE — warm gray, barely there
-// Softer than the old #2D2926 charcoal. Marcellus has a single 400 cut, so
-// there is no lighter weight to reach for — easing the ink is what takes the
-// heaviness out of these lines.
-const INKED = [92, 84, 76]; // #5C544C — warm graphite
+// Back to charcoal. The ink was eased only to take weight out of Marcellus;
+// Cormorant Infant's 300 italic is light on its own, and a soft ink on top of a
+// fine face left the lines too faint to read as they arrived.
+const INKED = [45, 41, 38]; // #2D2926 — rich charcoal
 
 /** Eases the ramp so ink arrives gradually rather than on a linear slope. */
 const smoothstep = (t: number) => t * t * (3 - 2 * t);
@@ -24,11 +24,11 @@ function inkStyle(progress: number, [start, end]: [number, number]) {
   const rgb = UNINKED.map((from, i) => Math.round(from + (INKED[i] - from) * t));
   return {
     color: `rgb(${rgb.join(", ")})`,
-    // Stops just short of fully opaque, which also takes weight off the stroke.
-    opacity: 0.4 + 0.52 * t,
-    // Scaled back from 1px: the accent face sits at a smaller size than the
-    // old Cormorant did, so the same blur read as smudged rather than arriving.
-    filter: `blur(${(0.75 * (1 - t)).toFixed(2)}px)`,
+    opacity: 0.4 + 0.6 * t,
+    // Lighter still than the 0.75 Marcellus wanted: Cormorant Infant's italic
+    // is finer, and a fine stroke turns to mush under a blur that a sturdy
+    // roman shrugs off.
+    filter: `blur(${(0.55 * (1 - t)).toFixed(2)}px)`,
   };
 }
 
@@ -48,18 +48,18 @@ export function ScrollReveal() {
           inside this box becomes dead space before the next section can start. */}
       <div className="sticky top-0 flex h-[72dvh] items-center justify-center px-[5%]">
         <p
-          className="w-full text-center font-accent"
+          className="w-full text-center font-accent-soft"
           style={{
             // 2.2rem is the chosen size; the vw term only pulls it down on
-            // phones narrower than roughly 380px, where the wide roman
-            // letterforms would otherwise run to the edge.
+            // phones narrower than roughly 380px, where the letterforms would
+            // otherwise run to the edge.
             fontSize: "clamp(1.85rem, 6.5vw + 0.7rem, 2.2rem)",
-            // Marcellus ships a single 400 cut — asking for anything heavier
-            // would only get a synthesised fake bold.
-            fontWeight: 400,
-            // Both values are the ones auditioned on /fonts, not fresh guesses.
+            // Matches the invitation line below: Cormorant Infant's real
+            // italic at 300, both cuts loaded, so nothing is synthesised.
+            fontStyle: "italic",
+            fontWeight: 300,
             letterSpacing: "-0.01em",
-            lineHeight: 1.08,
+            lineHeight: 1.14,
           }}
         >
           {LINES.map((line, i) => (

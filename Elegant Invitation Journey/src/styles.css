@@ -93,9 +93,7 @@
   --font-script: "Parisienne", cursive;
   --font-monogram: "Pinyon Script", cursive;
   --font-body: "Karla", system-ui, sans-serif;
-  /* Airy display serif, used for the invitation's opening lines. */
-  --font-accent: "Marcellus", "Cormorant Garamond", Georgia, serif;
-  /* Softer companion to the accent face, for the invitation line. */
+  /* Carries both invitation lines — the reveal and the join-us line. */
   --font-accent-soft: "Cormorant Infant", "Cormorant Garamond", Georgia, serif;
 
   --shadow-paper: 0 24px 60px -24px oklch(0.28 0.02 60 / 0.3);
@@ -127,7 +125,6 @@
   --font-script: var(--font-script);
   --font-monogram: var(--font-monogram);
   --font-body: var(--font-body);
-  --font-accent: var(--font-accent);
   --font-accent-soft: var(--font-accent-soft);
 }
 
