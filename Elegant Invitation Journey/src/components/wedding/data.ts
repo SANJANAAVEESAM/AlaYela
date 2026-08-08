@@ -251,7 +251,7 @@ export const DETAIL_CARDS: {
   {
     title: "Transportation",
     icon: "car",
-    body: "We're looking into shuttles between the hotels and the venues. If they're arranged, timings and pick-up points will be posted here.\n\nUntil then, please plan on driving or booking a ride — Uber and Lyft cover the whole area reliably. Every venue is below; tap an address for directions.",
+    body: "Please plan on driving or booking a ride — Uber and Lyft cover the whole area reliably. Tap any address below for directions.",
     venues: true,
   },
 ];

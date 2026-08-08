@@ -879,56 +879,75 @@ function DetailCards() {
 }
 
 /**
- * Every venue in running order, each address a link to directions.
+ * Every venue in running order, one row each, with directions.
  *
- * Grouped by day rather than listed flat, because guests plan a day at a time —
- * and consecutive events sharing a venue is then obvious at a glance rather
- * than something to notice by reading the same address twice.
+ * The venue is the row's subject rather than the event, so it carries the
+ * weight — the event name sits above it as the label. Each row keeps its date:
+ * a flat list reads more cleanly than day-grouped headings, but without the
+ * date a guest cannot tell which venue belongs to which morning.
  */
 function VenueList() {
+  const rows = EVENT_DAYS.flatMap((day) => day.events.map((event) => ({ day, event })));
+
   return (
     <div className="mx-auto mt-9 max-w-[20rem] text-left">
-      <p className="mb-4 font-body text-[0.58rem] font-medium tracking-[0.26em] uppercase text-muted-foreground">
+      <p className="mb-1 font-body text-[0.58rem] font-medium tracking-[0.26em] uppercase text-muted-foreground">
         Venues
       </p>
 
-      <div className="flex flex-col gap-5">
-        {EVENT_DAYS.map((day) => (
-          <div key={day.date}>
-            <p className="font-body text-[0.62rem] font-medium tracking-[0.16em] uppercase text-bronze-deep">
-              {day.weekday}, {day.date}
-            </p>
+      {rows.map(({ day, event }, i) => {
+        const directions = venueMapsHref(event.venue);
+        return (
+          <div
+            key={event.slug}
+            className="flex items-center justify-between gap-3 py-3.5"
+            style={{
+              borderTop:
+                i === 0 ? "none" : "1px solid color-mix(in oklab, var(--gold) 28%, transparent)",
+            }}
+          >
+            <div className="min-w-0">
+              <p className="font-body text-[0.56rem] font-medium tracking-[0.18em] uppercase text-muted-foreground">
+                {day.date.replace(" October", " Oct")} · {event.name}
+              </p>
 
-            <div className="mt-2.5 flex flex-col gap-3">
-              {day.events.map((event) => {
-                const directions = venueMapsHref(event.venue);
-                return (
-                  <div key={event.slug}>
-                    <p className="font-display text-[1.05rem] leading-tight text-foreground">
-                      {event.name}
-                    </p>
-                    <p className="font-body text-[0.82rem] leading-snug text-muted-foreground">
-                      {event.venue.name}
-                    </p>
+              {/* The venue is what this list is for, so it is the loudest line. */}
+              <p
+                className={
+                  directions
+                    ? "mt-1 font-display text-[1.15rem] leading-tight font-semibold text-ink-strong"
+                    : "mt-1 font-display text-[1.1rem] leading-tight text-muted-foreground italic"
+                }
+              >
+                {event.venue.name}
+              </p>
 
-                    {directions && event.venue.address && (
-                      <a
-                        href={directions}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-0.5 inline-flex items-start gap-1 font-body text-[0.8rem] leading-snug text-bronze-deep underline underline-offset-4"
-                      >
-                        {event.venue.address}
-                        <span aria-hidden="true">↗</span>
-                      </a>
-                    )}
-                  </div>
-                );
-              })}
+              {event.venue.address && (
+                <p className="mt-0.5 truncate font-body text-[0.74rem] leading-snug text-muted-foreground">
+                  {event.venue.address}
+                </p>
+              )}
             </div>
+
+            {directions ? (
+              <a
+                href={directions}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Directions to ${event.venue.name} for ${event.name}`}
+                className="shrink-0 rounded-full px-3.5 py-2 font-body text-[0.62rem] font-medium tracking-[0.14em] uppercase transition-opacity hover:opacity-90"
+                style={{ background: "var(--bronze)", color: "var(--primary-foreground)" }}
+              >
+                Map
+              </a>
+            ) : (
+              <span className="shrink-0 font-body text-[0.56rem] tracking-[0.14em] uppercase text-muted-foreground/70">
+                TBA
+              </span>
+            )}
           </div>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }
