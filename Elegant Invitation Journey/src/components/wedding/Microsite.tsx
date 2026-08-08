@@ -868,11 +868,68 @@ function DetailCards() {
               <p className="mx-auto max-w-[20rem] text-left font-body text-[0.95rem] leading-relaxed whitespace-pre-line text-muted-foreground">
                 {active.body}
               </p>
+
+              {active.venues && <VenueList />}
             </div>
           </div>
         )}
       </Modal>
     </>
+  );
+}
+
+/**
+ * Every venue in running order, each address a link to directions.
+ *
+ * Grouped by day rather than listed flat, because guests plan a day at a time —
+ * and consecutive events sharing a venue is then obvious at a glance rather
+ * than something to notice by reading the same address twice.
+ */
+function VenueList() {
+  return (
+    <div className="mx-auto mt-9 max-w-[20rem] text-left">
+      <p className="mb-4 font-body text-[0.58rem] font-medium tracking-[0.26em] uppercase text-muted-foreground">
+        Venues
+      </p>
+
+      <div className="flex flex-col gap-5">
+        {EVENT_DAYS.map((day) => (
+          <div key={day.date}>
+            <p className="font-body text-[0.62rem] font-medium tracking-[0.16em] uppercase text-bronze-deep">
+              {day.weekday}, {day.date}
+            </p>
+
+            <div className="mt-2.5 flex flex-col gap-3">
+              {day.events.map((event) => {
+                const directions = venueMapsHref(event.venue);
+                return (
+                  <div key={event.slug}>
+                    <p className="font-display text-[1.05rem] leading-tight text-foreground">
+                      {event.name}
+                    </p>
+                    <p className="font-body text-[0.82rem] leading-snug text-muted-foreground">
+                      {event.venue.name}
+                    </p>
+
+                    {directions && event.venue.address && (
+                      <a
+                        href={directions}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-0.5 inline-flex items-start gap-1 font-body text-[0.8rem] leading-snug text-bronze-deep underline underline-offset-4"
+                      >
+                        {event.venue.address}
+                        <span aria-hidden="true">↗</span>
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 

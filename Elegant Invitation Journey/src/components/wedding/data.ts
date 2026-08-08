@@ -226,7 +226,13 @@ export type DetailIcon = "bed" | "plane" | "hotel" | "car";
 // TODO(content): hotel names, rates, booking codes and shuttle timings still
 // need to be filled in by the couple — the copy below says so plainly rather
 // than promising details that may not arrive.
-export const DETAIL_CARDS: { title: string; icon: DetailIcon; body: string }[] = [
+export const DETAIL_CARDS: {
+  title: string;
+  icon: DetailIcon;
+  body: string;
+  /** Appends the full venue list, with directions, under the copy. */
+  venues?: boolean;
+}[] = [
   {
     title: "Accommodation",
     icon: "bed",
@@ -245,6 +251,7 @@ export const DETAIL_CARDS: { title: string; icon: DetailIcon; body: string }[] =
   {
     title: "Transportation",
     icon: "car",
-    body: "We're looking into shuttles between the hotels and the venues. If they're arranged, timings and pick-up points will be posted here.\n\nUntil then, please plan on driving or booking a ride. Both Uber and Lyft cover the whole area reliably.",
+    body: "We're looking into shuttles between the hotels and the venues. If they're arranged, timings and pick-up points will be posted here.\n\nUntil then, please plan on driving or booking a ride — Uber and Lyft cover the whole area reliably. Every venue is below; tap an address for directions.",
+    venues: true,
   },
 ];
