@@ -83,6 +83,7 @@ export const EVENT_DAYS: EventDay[] = [
         theme: "Carnival",
         time: "12:00 PM onwards",
         tentative: true,
+        dressCode: "Yellows and florals — wear something you don't mind turmeric on",
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 29, 12, 0),
         end: ET(9, 29, 16, 0),
@@ -95,6 +96,7 @@ export const EVENT_DAYS: EventDay[] = [
         time: "5:00 PM onwards",
         tentative: true,
         followsPrevious: true,
+        dressCode: "Bright colours — sleeves you can push past the elbow",
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 29, 17, 0),
         end: ET(9, 29, 22, 0),
@@ -146,6 +148,7 @@ export const EVENT_DAYS: EventDay[] = [
         theme: "Vintage",
         time: "11:15 AM onwards",
         tentative: true,
+        dressCode: "Traditional Indian — kurta, lehenga or saree",
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 31, 11, 15),
         end: ET(9, 31, 14, 0),
@@ -156,6 +159,7 @@ export const EVENT_DAYS: EventDay[] = [
         themeKey: "telugu",
         theme: "Telugu Elegance",
         time: "Muhurtham: 7:25 PM",
+        dressCode: "Traditional Telugu — pattu sarees, silks and sherwanis",
         venue: {
           name: "Sweet Magnolia Estate",
           address: "10101 Bailey Rd, Cornelius, NC 28031",
@@ -198,10 +202,28 @@ export const GALLERY = [
 
 export type DetailIcon = "bed" | "plane" | "hotel" | "car";
 
-// TODO(content): all detail-card copy below is placeholder.
+// TODO(content): hotel names, rates, booking codes and shuttle timings still
+// need to be filled in by the couple — the copy below says so plainly rather
+// than promising details that may not arrive.
 export const DETAIL_CARDS: { title: string; icon: DetailIcon; body: string }[] = [
-  { title: "Accommodation", icon: "bed", body: "Room blocks and booking codes — coming soon." },
-  { title: "Travel", icon: "plane", body: "Airports, driving and getting to Charlotte — coming soon." },
-  { title: "Nearby Hotels", icon: "hotel", body: "Our favourite places to stay near the venues — coming soon." },
-  { title: "Transportation", icon: "car", body: "Shuttle timings between the hotels and venues — coming soon." },
+  {
+    title: "Accommodation",
+    icon: "bed",
+    body: "Celebrations are spread across Charlotte and Cornelius, so anywhere around University City or Lake Norman keeps you close to everything.\n\nWe're sorting out room blocks now. Hotel names, rates and booking codes will appear here as soon as they're set, and everyone who RSVPs will hear from us directly.",
+  },
+  {
+    title: "Travel",
+    icon: "plane",
+    body: "Charlotte Douglas International (CLT) is the closest airport and the easiest arrival for almost everyone. It's a major hub, so most guests will find a direct flight.\n\nFrom the airport it's roughly half an hour to the venues, traffic depending. Rental cars, Uber and Lyft are all easy to find at CLT, and we'd suggest a car — the venues are a little spread out and not walkable from one another.",
+  },
+  {
+    title: "Nearby Hotels",
+    icon: "hotel",
+    body: "For the Sangeet at Luxe Event Venue, look around University City in north-east Charlotte. For the wedding at Sweet Magnolia Estate, Cornelius and Huntersville sit closest.\n\nOnce our room blocks are confirmed we'll list the specific hotels here with booking links.",
+  },
+  {
+    title: "Transportation",
+    icon: "car",
+    body: "We're looking into shuttles between the hotels and the venues. If they're arranged, timings and pick-up points will be posted here.\n\nUntil then, please plan on driving or booking a ride. Both Uber and Lyft cover the whole area reliably.",
+  },
 ];

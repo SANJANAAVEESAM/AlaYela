@@ -1,6 +1,6 @@
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
 
-const LINES = ["you're cordially", "invited to celebrate", "our story"];
+const LINES = ["Before forever,", "there was", "a beginning…"];
 
 /** Each line's [start, end] window in the section's 0–1 scroll progress. */
 const RAMPS: [number, number][] = [

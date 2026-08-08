@@ -158,12 +158,32 @@ const PRINTS = CHAPTERS.flatMap((chapter, ci) =>
 const FAN = 13;
 const TILTS = [-1.6, 1.3, -0.9, 1.7, -1.2, 0.8];
 
+/**
+ * How much of a print's approach the chapter copy hands over across, in px.
+ * The copy is tied to this stretch rather than to the moment the print lands,
+ * so the words travel with the photo instead of snapping once it has covered
+ * the one beneath.
+ */
+const HANDOVER = 300;
+/** How far the copy drifts as it leaves, in px. */
+const SLIDE = 34;
+
 function Story() {
   const headerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [deckTop, setDeckTop] = useState(420);
-  const [active, setActive] = useState(0);
+  /** Fractional position through the prints — 1.4 means print 1, 40% of the way to 2. */
+  const [pos, setPos] = useState(0);
   const [lightbox, setLightbox] = useState<number | null>(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReducedMotion(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   // The pinned header's height decides where the deck starts, and it changes
   // with the longest chapter's copy — so measure it rather than guess.
@@ -177,18 +197,23 @@ function Story() {
     return () => ro.disconnect();
   }, []);
 
-  // Whichever print has reached the top of the pile owns the chapter copy.
+  // How far along the pile we are, as a fraction rather than a whole number, so
+  // the copy can move with the print that is still on its way in.
   useEffect(() => {
     let frame = 0;
     const read = () => {
-      let idx = 0;
+      let p = 0;
       cardRefs.current.forEach((el, i) => {
-        // Each print parks at its own height in the fan, so compare against
+        if (!el) return;
+        // Each print parks at its own height in the fan, so measure against
         // that rather than one shared line — otherwise only the first print
         // ever registers and the copy never leaves chapter one.
-        if (el && el.getBoundingClientRect().top <= deckTop + i * FAN + 6) idx = i;
+        const remaining = el.getBoundingClientRect().top - (deckTop + i * FAN);
+        p += Math.min(1, Math.max(0, (HANDOVER - remaining) / HANDOVER));
       });
-      setActive(PRINTS[idx].chapter);
+      // The first print is already parked when the deck opens, so the running
+      // total sits one ahead of the index we want.
+      setPos(Math.max(0, p - 1));
     };
     const onScroll = () => {
       cancelAnimationFrame(frame);
@@ -205,6 +230,28 @@ function Story() {
   }, [deckTop]);
 
   const shown = lightbox !== null ? PRINTS[lightbox] : null;
+
+  // The two prints either side of where we are, and the chapters they belong
+  // to. When both sit in the same chapter there is nothing to hand over.
+  const lower = Math.min(PRINTS.length - 1, Math.floor(pos));
+  const upper = Math.min(PRINTS.length - 1, lower + 1);
+  const frac = Math.min(1, Math.max(0, pos - lower));
+  const leaving = PRINTS[lower].chapter;
+  const arriving = PRINTS[upper].chapter;
+  const active = frac < 0.5 ? leaving : arriving;
+
+  /**
+   * Opacity and drift for one chapter's copy at the current scroll position.
+   * Guests who ask for reduced motion still get the cross-fade, which carries
+   * the meaning, but none of the travel.
+   */
+  const chapterMotion = (i: number) => {
+    const drift = reducedMotion ? 0 : SLIDE;
+    if (leaving === arriving) return { opacity: i === leaving ? 1 : 0, shift: 0 };
+    if (i === leaving) return { opacity: 1 - frac, shift: -drift * frac };
+    if (i === arriving) return { opacity: frac, shift: drift * (1 - frac) };
+    return { opacity: 0, shift: 0 };
+  };
 
   return (
     <section id="story" className="relative">
@@ -232,14 +279,20 @@ function Story() {
         }}
       >
         <div className="relative min-h-[17rem]">
-          {CHAPTERS.map((chapter, i) => (
+          {CHAPTERS.map((chapter, i) => {
+            const { opacity, shift } = chapterMotion(i);
+            return (
             <div
               key={chapter.label}
               aria-hidden={i !== active}
               className="absolute inset-x-0 top-0"
               style={{
-                opacity: i === active ? 1 : 0,
-                transition: "opacity 550ms ease",
+                opacity,
+                // Tied to scroll rather than to a timed fade, so the words leave
+                // at exactly the pace of the photo pushing them out. "none" and
+                // not translateY(0): a transform would make this the containing
+                // block for any fixed-position child.
+                transform: shift === 0 ? "none" : `translateY(${shift.toFixed(1)}px)`,
                 pointerEvents: i === active ? "auto" : "none",
               }}
             >
@@ -257,7 +310,8 @@ function Story() {
                 </p>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -389,7 +443,7 @@ function JoinUs() {
             className="font-display leading-tight lowercase first-letter:uppercase text-foreground"
             style={{ fontSize: "clamp(2rem, 9.5vw, 2.5rem)" }}
           >
-            so please join us…
+            Be part of our beautiful beginning
           </p>
           <p
             className="font-display leading-tight lowercase first-letter:uppercase text-foreground"
@@ -429,10 +483,10 @@ function EventsSection() {
     >
       <Reveal>
         <h2
-          className="text-center font-display leading-none lowercase first-letter:uppercase text-foreground"
-          style={{ fontSize: "clamp(2.1rem, 10vw, 2.6rem)" }}
+          className="text-center font-display leading-none text-foreground"
+          style={{ fontSize: "clamp(1.9rem, 8.6vw, 2.4rem)" }}
         >
-          the celebrations
+          The Wedding Soirée
         </h2>
         <Ornament className="mt-4 mb-8" />
 
@@ -485,6 +539,28 @@ function EventsSection() {
                 className="absolute inset-x-0 top-0 h-px"
                 style={{ background: "var(--gradient-gold)" }}
               />
+
+              {/* A crop of the event's own artwork, so the card is recognisable
+                  as Haldi or Sangeet before the name is read. Same image the
+                  full-page sheet opens onto, which makes the tap feel continuous. */}
+              {EVENT_THEMES[event.themeKey].image && (
+                <span
+                  aria-hidden="true"
+                  className="mx-auto mb-4 block size-16 overflow-hidden rounded-full"
+                  style={{
+                    border: "1px solid color-mix(in oklab, var(--gold) 50%, transparent)",
+                    boxShadow: "0 4px 12px -6px oklch(0.3 0.03 60 / 0.45)",
+                  }}
+                >
+                  <img
+                    src={EVENT_THEMES[event.themeKey].image}
+                    alt=""
+                    loading="lazy"
+                    className="size-full object-cover"
+                    style={{ objectPosition: EVENT_THEMES[event.themeKey].imagePosition ?? "center" }}
+                  />
+                </span>
+              )}
 
               {/* Name and theme only — time, venue and dress code live in the
                   sheet behind "View details". */}
@@ -744,7 +820,9 @@ function DetailCards() {
                 {active.title}
               </h3>
               <Ornament className="mt-5 mb-7" />
-              <p className="mx-auto max-w-[20rem] font-body text-base leading-relaxed text-muted-foreground">
+              {/* Paragraphs are blank-line separated in the copy, and it now
+                  runs long enough that centring every line would hurt to read. */}
+              <p className="mx-auto max-w-[20rem] text-left font-body text-[0.95rem] leading-relaxed whitespace-pre-line text-muted-foreground">
                 {active.body}
               </p>
             </div>
