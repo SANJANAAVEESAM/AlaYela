@@ -207,8 +207,15 @@ function Story() {
       {/* Pinned: the chapter copy cross-fades as each print reaches the pile */}
       <div
         ref={headerRef}
-        className="sticky top-0 z-30 bg-background px-5 pb-5 text-center"
-        style={{ paddingTop: "calc(env(safe-area-inset-top) + 4.5rem)" }}
+        className="sticky top-0 z-30 px-5 pb-5 text-center"
+        style={{
+          paddingTop: "calc(env(safe-area-inset-top) + 4.5rem)",
+          // Opaque where the copy sits so the invitation lines pass cleanly
+          // behind it, fading out at the lower edge to avoid a hard seam
+          // across the backdrop.
+          background:
+            "linear-gradient(180deg, var(--background) 0%, var(--background) 84%, transparent 100%)",
+        }}
       >
         <div className="relative min-h-[17rem]">
           {CHAPTERS.map((chapter, i) => (

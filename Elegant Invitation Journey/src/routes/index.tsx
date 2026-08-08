@@ -41,7 +41,7 @@ function Index() {
 
   const handleOpened = () => {
     setRevealed(true);
-    window.setTimeout(() => setOverlayGone(true), 950);
+    window.setTimeout(() => setOverlayGone(true), 650);
   };
 
   return (
@@ -49,8 +49,8 @@ function Index() {
       <Microsite live={revealed} />
       {!overlayGone && (
         <div
-          className="fixed inset-0 z-50 bg-background"
-          style={{ transition: "opacity 900ms ease", opacity: revealed ? 0 : 1 }}
+          className="fixed inset-0 z-50"
+          style={{ transition: "opacity 600ms ease", opacity: revealed ? 0 : 1 }}
         >
           <Envelope onOpened={handleOpened} />
         </div>
