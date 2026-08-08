@@ -11,6 +11,7 @@ import type { ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import ogImage from "../assets/couple.jpg";
+import backdrop from "../assets/backdrop.jpg";
 
 
 function NotFoundComponent() {
@@ -97,7 +98,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Karla:wght@300;400;500;600;700&family=Parisienne&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Karla:wght@300;400;500;600;700&family=Parisienne&family=Pinyon+Script&display=swap",
       },
     ],
   }),
@@ -127,6 +128,28 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="relative min-h-screen">
+        {/* Fixed backdrop behind every section. Negative z-index keeps it under
+            the content but still above the body's cream, which is what the
+            veil blends into. */}
+        <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+          <img
+            src={backdrop}
+            alt=""
+            width={653}
+            height={1000}
+            className="h-full w-full object-cover object-center"
+            style={{ opacity: 0.34 }}
+          />
+          {/* Warm wash so type stays readable over the busiest parts */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, color-mix(in oklab, var(--background) 62%, transparent) 0%, color-mix(in oklab, var(--background) 34%, transparent) 42%, color-mix(in oklab, var(--background) 66%, transparent) 100%)",
+            }}
+          />
+        </div>
+
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </div>
