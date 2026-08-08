@@ -717,22 +717,9 @@ function EventsSection() {
                 )}
               </div>
 
+              {/* No per-event calendar button: the one under the schedule adds
+                  all three days at once, which is what guests actually want. */}
               <div className="mt-10 flex flex-col items-center gap-3">
-                <AddToCalendar
-                  event={{
-                    title: `${open.event.name} — ${COUPLE.bride} & ${COUPLE.groom}`,
-                    description: [
-                      open.event.theme && `Theme: ${open.event.theme}.`,
-                      open.event.dressCode && `Dress code: ${open.event.dressCode}.`,
-                    ]
-                      .filter(Boolean)
-                      .join(" "),
-                    location: open.event.venue.name,
-                    startUtc: open.event.start.toISOString(),
-                    endUtc: open.event.end.toISOString(),
-                  }}
-                />
-
                 {PHOTO_UPLOAD_URL ? (
                   <a
                     href={PHOTO_UPLOAD_URL}

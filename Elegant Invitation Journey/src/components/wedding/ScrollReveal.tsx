@@ -10,7 +10,10 @@ const RAMPS: [number, number][] = [
 ];
 
 const UNINKED = [201, 197, 190]; // #C9C5BE — warm gray, barely there
-const INKED = [45, 41, 38]; // #2D2926 — rich charcoal
+// Softer than the old #2D2926 charcoal. Marcellus has a single 400 cut, so
+// there is no lighter weight to reach for — easing the ink is what takes the
+// heaviness out of these lines.
+const INKED = [92, 84, 76]; // #5C544C — warm graphite
 
 /** Eases the ramp so ink arrives gradually rather than on a linear slope. */
 const smoothstep = (t: number) => t * t * (3 - 2 * t);
@@ -21,7 +24,8 @@ function inkStyle(progress: number, [start, end]: [number, number]) {
   const rgb = UNINKED.map((from, i) => Math.round(from + (INKED[i] - from) * t));
   return {
     color: `rgb(${rgb.join(", ")})`,
-    opacity: 0.4 + 0.6 * t,
+    // Stops just short of fully opaque, which also takes weight off the stroke.
+    opacity: 0.4 + 0.52 * t,
     // Scaled back from 1px: the accent face sits at a smaller size than the
     // old Cormorant did, so the same blur read as smudged rather than arriving.
     filter: `blur(${(0.75 * (1 - t)).toFixed(2)}px)`,
