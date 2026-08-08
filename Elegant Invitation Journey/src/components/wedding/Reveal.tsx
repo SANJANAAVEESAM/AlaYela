@@ -34,7 +34,9 @@ export function Reveal({
       className={className}
       style={{
         opacity: shown ? 1 : 0,
-        transform: shown ? "translateY(0)" : "translateY(26px)",
+        // "none" rather than translateY(0): any transform makes this a containing
+        // block for position:fixed children, which strands modals rendered inside.
+        transform: shown ? "none" : "translateY(26px)",
         transition: `opacity 900ms ease ${delay}ms, transform 900ms cubic-bezier(0.22,1,0.36,1) ${delay}ms`,
       }}
     >

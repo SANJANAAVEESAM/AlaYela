@@ -180,6 +180,13 @@
   }
 }
 
+/* A modal owns the screen: the fixed nav steps aside so it can never sit over
+   the panel's close button. */
+:root[data-modal-open] .site-nav {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 @utility rule-gold {
   height: 1px;
   background: var(--gradient-gold);

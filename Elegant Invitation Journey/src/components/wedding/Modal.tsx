@@ -34,12 +34,16 @@ export function Modal({
 
   useEffect(() => {
     if (!open) return;
-    const prev = document.documentElement.style.overflow;
-    document.documentElement.style.overflow = "hidden";
+    const el = document.documentElement;
+    const prev = el.style.overflow;
+    el.style.overflow = "hidden";
+    // The nav is fixed and would otherwise sit over the panel's close button.
+    el.dataset.modalOpen = "true";
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
     return () => {
-      document.documentElement.style.overflow = prev;
+      el.style.overflow = prev;
+      delete el.dataset.modalOpen;
       window.removeEventListener("keydown", onKey);
     };
   }, [open, onClose]);

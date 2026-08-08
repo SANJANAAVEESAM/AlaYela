@@ -41,7 +41,7 @@ export function FloatingNav({ visible }: { visible: boolean }) {
     <>
       {/* Sits exactly inside the hero card's top edge, then floats on scroll. */}
       <nav
-        className="glass fixed inset-x-0 z-[60] mx-auto flex w-[calc(min(100vw,26rem)-2.5rem)] items-center justify-between rounded-full py-1.5 pr-2 pl-5 shadow-[0_14px_40px_-16px_oklch(0.28_0.02_60/0.35)]"
+        className="site-nav glass fixed inset-x-0 z-[60] mx-auto flex w-[calc(min(100vw,26rem)-2.5rem)] items-center justify-between rounded-full py-1.5 pr-2 pl-5 shadow-[0_14px_40px_-16px_oklch(0.28_0.02_60/0.35)]"
         style={{
           top: "calc(env(safe-area-inset-top) + 1.25rem)",
           transition: "opacity 600ms ease, transform 600ms cubic-bezier(0.22,1,0.36,1)",
