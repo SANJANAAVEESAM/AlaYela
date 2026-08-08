@@ -127,7 +127,7 @@ export const EVENT_DAYS: EventDay[] = [
         dressCode: {
           kind: "solids",
           label: "Solid colours",
-          note: "Any colour at all — just keep it one solid block rather than a print.",
+          note: "Any colour at all — just keep it one solid block.",
         },
         photosUrl: GALLERY_FOLDERS[0].url,
         venue: { name: "To be announced" }, // TODO(venue)
@@ -145,7 +145,7 @@ export const EVENT_DAYS: EventDay[] = [
         dressCode: {
           kind: "solids",
           label: "Solid colours",
-          note: "Any colour at all — just keep it one solid block rather than a print.",
+          note: "Any colour at all — just keep it one solid block.",
         },
         photosUrl: GALLERY_FOLDERS[0].url,
         sharesVenueWithPrevious: true,

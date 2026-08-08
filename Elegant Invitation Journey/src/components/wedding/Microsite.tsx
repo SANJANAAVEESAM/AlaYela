@@ -714,13 +714,23 @@ function EventsSection() {
                 )}
 
                 {open.event.dressCode && (
-                  <div className="pt-1">
-                    <DressCodeArt
-                      dressCode={open.event.dressCode}
-                      ink={look?.ink}
-                      inkSoft={look?.inkSoft}
+                  <>
+                    {/* The same hairline that separates the time from the venue,
+                        so the dress code reads as its own passage. */}
+                    <span
+                      aria-hidden="true"
+                      className="mx-auto block h-px w-12"
+                      style={{ background: accent, opacity: 0.5 }}
                     />
-                  </div>
+
+                    <div className="pt-1">
+                      <DressCodeArt
+                        dressCode={open.event.dressCode}
+                        ink={look?.ink}
+                        inkSoft={look?.inkSoft}
+                      />
+                    </div>
+                  </>
                 )}
               </div>
 
