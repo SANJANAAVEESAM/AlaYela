@@ -26,6 +26,7 @@ import { Countdown } from "./Countdown";
 import { FloatingNav } from "./FloatingNav";
 import { Hero } from "./Hero";
 import { Modal } from "./Modal";
+import { MusicCandidates } from "./MusicCandidates";
 import { MusicToggle } from "./MusicToggle";
 import { Ornament } from "./Ornament";
 import { Petals } from "./Petals";
@@ -536,62 +537,58 @@ function EventsSection() {
                 />
               </div>
 
-              <dl className="space-y-6 text-left">
-                <div>
-                  <dt className="eyebrow text-[0.5rem]" style={{ color: accent }}>Date</dt>
-                  <dd className="mt-1.5 font-display text-lg">
-                    {open.day.weekday}, {open.day.date} {WEDDING_YEAR}
-                  </dd>
-                </div>
+              {/* Set as invitation lines rather than a labelled list — the
+                  artwork behind it reads as stationery, and labels fought it. */}
+              <div className="space-y-5 text-center">
+                <p className="font-display text-xl leading-snug">
+                  {open.day.weekday}, {open.day.date} {WEDDING_YEAR}
+                </p>
+
+                <p className="font-display text-xl">
+                  {open.event.time}
+                  {open.event.tentative && (
+                    <span
+                      className="mt-1 block font-body text-xs italic"
+                      style={{ color: look?.inkSoft }}
+                    >
+                      Timing may change
+                    </span>
+                  )}
+                </p>
+
+                <span
+                  aria-hidden="true"
+                  className="mx-auto block h-px w-12"
+                  style={{ background: accent, opacity: 0.5 }}
+                />
+
+                <p className="font-display text-xl">{open.event.venue.name}</p>
 
                 <div>
-                  <dt className="eyebrow text-[0.5rem]" style={{ color: accent }}>Time</dt>
-                  <dd className="mt-1.5 font-display text-lg">
-                    {open.event.time}
-                    {open.event.tentative && (
-                      <span className="block font-body text-xs italic" style={{ color: look?.inkSoft }}>
-                        Timing may change
-                      </span>
-                    )}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt className="eyebrow text-[0.5rem]" style={{ color: accent }}>Venue</dt>
-                  <dd className="mt-1.5 font-display text-lg">{open.event.venue.name}</dd>
-                </div>
-
-                <div>
-                  <dt className="eyebrow text-[0.5rem]" style={{ color: accent }}>Location</dt>
-                  <dd className="mt-1.5">
-                    {directions ? (
-                      <a
-                        href={directions}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-2 font-body text-sm underline underline-offset-4"
-                        style={{ color: accent, textDecorationColor: accent }}
-                      >
-                        {open.event.venue.address ?? "Open in Maps"}
-                        <span aria-hidden="true">↗</span>
-                      </a>
-                    ) : (
-                      <span className="font-body text-sm italic" style={{ color: look?.inkSoft }}>
-                        A map will appear here once the venue is confirmed.
-                      </span>
-                    )}
-                  </dd>
+                  {directions ? (
+                    <a
+                      href={directions}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 font-body text-sm underline underline-offset-4"
+                      style={{ color: accent, textDecorationColor: accent }}
+                    >
+                      {open.event.venue.address ?? "Open in Maps"}
+                      <span aria-hidden="true">↗</span>
+                    </a>
+                  ) : (
+                    <span className="font-body text-sm italic" style={{ color: look?.inkSoft }}>
+                      A map will appear here once the venue is confirmed.
+                    </span>
+                  )}
                 </div>
 
                 {open.event.dressCode && (
-                  <div>
-                    <dt className="eyebrow text-[0.5rem]" style={{ color: accent }}>Dress code</dt>
-                    <dd className="mt-1.5 font-body text-sm leading-relaxed">
-                      {open.event.dressCode}
-                    </dd>
-                  </div>
+                  <p className="font-body text-sm" style={{ color: look?.inkSoft }}>
+                    {open.event.dressCode}
+                  </p>
                 )}
-              </dl>
+              </div>
 
               <div className="mt-10 flex flex-col items-center gap-3">
                 <AddToCalendar
@@ -688,7 +685,8 @@ function DetailCards() {
   const active = openIdx !== null ? DETAIL_CARDS[openIdx] : null;
 
   return (
-    <Section id="travel">
+    <>
+      <Section id="travel">
       <h2
         className="text-center font-display leading-none lowercase first-letter:uppercase text-foreground"
         style={{ fontSize: "clamp(2.1rem, 10vw, 2.6rem)" }}
@@ -730,22 +728,30 @@ function DetailCards() {
           </button>
         ))}
       </div>
+      </Section>
 
-      <Modal open={active !== null} onClose={() => setOpenIdx(null)} label={active?.title ?? "Details"}>
+      <Modal
+        open={active !== null}
+        onClose={() => setOpenIdx(null)}
+        label={active?.title ?? "Details"}
+        variant="full"
+      >
         {active && (
-          <div className="pt-2 pb-4 text-center">
-            <DetailIconArt icon={active.icon} className="mx-auto h-12 w-auto" />
-            <h3 className="mt-4 font-display text-3xl lowercase first-letter:uppercase text-foreground">
-              {active.title}
-            </h3>
-            <Ornament className="mt-4 mb-5" />
-            <p className="mx-auto max-w-[20rem] font-body text-sm leading-relaxed text-muted-foreground">
-              {active.body}
-            </p>
+          <div className="flex min-h-full flex-col pt-6 pb-4 text-center">
+            <div className="my-auto w-full">
+              <DetailIconArt icon={active.icon} className="mx-auto h-16 w-auto" />
+              <h3 className="mt-6 font-display text-[2.1rem] leading-tight lowercase first-letter:uppercase text-foreground">
+                {active.title}
+              </h3>
+              <Ornament className="mt-5 mb-7" />
+              <p className="mx-auto max-w-[20rem] font-body text-base leading-relaxed text-muted-foreground">
+                {active.body}
+              </p>
+            </div>
           </div>
         )}
       </Modal>
-    </Section>
+    </>
   );
 }
 
@@ -756,7 +762,8 @@ function Faqs() {
   const [copied, setCopied] = useState<"idle" | "done" | "failed">("idle");
 
   return (
-    <Section id="faqs" className="text-center">
+    <>
+      <Section id="faqs" className="text-center">
       <h2
         className="font-display leading-none lowercase first-letter:uppercase text-foreground"
         style={{ fontSize: "clamp(2.4rem, 12vw, 3rem)" }}
@@ -773,6 +780,7 @@ function Faqs() {
       >
         Reach out to {COUPLE.bride} or {COUPLE.groom}
       </button>
+      </Section>
 
       <Modal open={contactOpen} onClose={() => setContactOpen(false)} label="Contact the couple">
         <div className="flex flex-col items-center gap-5 pt-3 pb-4 text-center">
@@ -798,7 +806,7 @@ function Faqs() {
           </div>
         </div>
       </Modal>
-    </Section>
+    </>
   );
 }
 
@@ -1035,6 +1043,7 @@ export function Microsite({ live }: { live: boolean }) {
       <BotanicalWatermark />
       <FloatingNav visible={live} />
       <MusicToggle />
+      <MusicCandidates />
 
       <main className="relative mx-auto w-full max-w-[26rem]">
         <Hero live={live} />

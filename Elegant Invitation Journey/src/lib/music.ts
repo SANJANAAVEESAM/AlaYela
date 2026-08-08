@@ -6,11 +6,12 @@
  * envelope, which satisfies browser autoplay policies.
  */
 // TODO(music): drop an audio file at this path — public/music/invitation.mp3
-const SRC = "/music/invitation.mp3";
+export const MUSIC_SRC = "/music/invitation.mp3";
 const TARGET_VOLUME = 0.3;
 const FADE_MS = 3500;
 
 let audio: HTMLAudioElement | null = null;
+let current = MUSIC_SRC;
 let muted = false;
 const listeners = new Set<() => void>();
 
@@ -24,18 +25,29 @@ export function subscribeMusic(fn: () => void) {
 }
 
 export function getMusicState() {
-  return { playing: audio !== null, muted };
+  return { playing: audio !== null, muted, track: current };
 }
 
-export async function startMusic() {
-  if (typeof window === "undefined" || audio) return;
+function stop() {
+  audio?.pause();
+  audio = null;
+}
 
-  const el = new Audio(SRC);
+/**
+ * Begin playback of `src`, fading up over `fadeMs`.
+ * Resolves false when the file is missing or the browser refuses to play.
+ */
+async function play(src: string, fadeMs: number): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+  stop();
+  current = src;
+
+  const el = new Audio(src);
   el.loop = true;
   el.preload = "auto";
   el.volume = 0;
 
-  // A missing/unreachable file must not surface as an unhandled rejection.
+  // A missing or unreachable file must not surface as an unhandled rejection.
   el.addEventListener(
     "error",
     () => {
@@ -50,20 +62,38 @@ export async function startMusic() {
   try {
     await el.play();
   } catch {
-    return;
+    emit();
+    return false;
   }
 
   audio = el;
   emit();
 
-  const start = performance.now();
-  const fade = (now: number) => {
+  const started = performance.now();
+  const step = (now: number) => {
     if (audio !== el) return;
-    const t = Math.min(1, (now - start) / FADE_MS);
+    const t = fadeMs <= 0 ? 1 : Math.min(1, (now - started) / fadeMs);
     el.volume = muted ? 0 : TARGET_VOLUME * t;
-    if (t < 1) requestAnimationFrame(fade);
+    if (t < 1) requestAnimationFrame(step);
   };
-  requestAnimationFrame(fade);
+  requestAnimationFrame(step);
+  return true;
+}
+
+/** Starts the invitation's own track. Called from the tap that opens it. */
+export async function startMusic() {
+  if (audio) return;
+  await play(MUSIC_SRC, FADE_MS);
+}
+
+/** Swaps to another track immediately — used when auditioning candidates. */
+export async function playTrack(src: string) {
+  return play(src, 400);
+}
+
+export function stopMusic() {
+  stop();
+  emit();
 }
 
 export function toggleMute() {
