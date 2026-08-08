@@ -97,7 +97,7 @@ function BotanicalWatermark() {
 // TODO(content): captions are drawn from the chapter copy — change freely.
 const CHAPTERS = [
   {
-    label: "Chapter One",
+    label: "Chapter I",
     title: "The Beginning",
     body: [
       "What began as a casual camping trip with friends to Deception Pass became the first page of our story. Between endless conversations, laughter around the campfire, and a sky full of stars, two strangers from the same college finally found each other.",
@@ -112,7 +112,7 @@ const CHAPTERS = [
     ],
   },
   {
-    label: "Chapter Two",
+    label: "Chapter II",
     title: "Three Little Words",
     body: [
       "A drive to the Seattle airport.\nOne last hug before goodbye.",
@@ -131,7 +131,7 @@ const CHAPTERS = [
     ],
   },
   {
-    label: "Chapter Three",
+    label: "Chapter III",
     title: "Our Sunday Tradition",
     body: [
       "Some love stories are written through grand gestures.",
@@ -331,7 +331,7 @@ function Story() {
                 pointerEvents: i === active ? "auto" : "none",
               }}
             >
-              <h3 className="font-display text-[1.4rem] font-semibold lowercase first-letter:uppercase text-foreground">
+              <h3 className="font-display text-[1.4rem] font-semibold text-foreground">
                 {chapter.label}: {chapter.title}
               </h3>
               <div className="mx-auto mt-3 max-w-[21rem] space-y-2 font-body text-[0.88rem] leading-[1.55] whitespace-pre-line text-muted-foreground">
