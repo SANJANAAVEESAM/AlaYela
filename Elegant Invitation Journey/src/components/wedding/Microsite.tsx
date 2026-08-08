@@ -474,13 +474,15 @@ function JoinUs() {
         {/* One gap value, so the spacing between every element is identical */}
         <div className="flex flex-col items-center gap-9">
           <p
-            className="font-accent leading-snug text-foreground"
+            className="font-accent-soft leading-snug text-foreground"
             style={{
               // 1.8rem chosen on /fonts; the vw term only eases it down on
               // phones too narrow to hold the line in two.
               fontSize: "clamp(1.45rem, 5.4vw + 0.6rem, 1.8rem)",
-              // Marcellus ships one cut only — see ScrollReveal.
-              fontWeight: 400,
+              // Italic 300 is the cut auditioned, and both are loaded — unlike
+              // Marcellus, this family has real italics, so nothing is faked.
+              fontStyle: "italic",
+              fontWeight: 300,
               letterSpacing: "-0.01em",
             }}
           >
