@@ -386,10 +386,15 @@ function JoinUs() {
 
 /* ---------------------------------- events ---------------------------------- */
 
-/** The whole schedule, sized to sit within a single screen — no illustrations. */
+/**
+ * The schedule, one day at a time. Tabs keep it to a single screen while still
+ * giving each event room, and every card opens a sheet with the full details.
+ */
 function EventsSection() {
+  const [dayIdx, setDayIdx] = useState(0);
   const [open, setOpen] = useState<{ event: WeddingEvent; day: EventDay } | null>(null);
   const directions = open ? venueMapsHref(open.event.venue) : null;
+  const activeDay = EVENT_DAYS[dayIdx];
 
   return (
     <section
@@ -409,59 +414,69 @@ function EventsSection() {
         </h2>
         <Ornament className="mt-4 mb-8" />
 
-        {EVENT_DAYS.map((day, d) => (
-          <div key={day.date} className={d ? "mt-7" : ""}>
-            <p className="font-body text-[0.6rem] font-medium tracking-[0.24em] uppercase text-bronze">
-              {day.date} · {day.weekday}
-            </p>
-            <span aria-hidden="true" className="mt-2 mb-3.5 block h-px w-full bg-[var(--border)]" />
+        <div className="flex justify-center gap-2">
+          {EVENT_DAYS.map((d, i) => {
+            const on = i === dayIdx;
+            return (
+              <button
+                key={d.date}
+                type="button"
+                onClick={() => setDayIdx(i)}
+                aria-pressed={on}
+                className="rounded-full px-4 py-2.5 font-body text-[0.66rem] font-medium tracking-[0.12em] uppercase transition-colors"
+                style={{
+                  background: on ? "var(--bronze)" : "color-mix(in oklab, var(--ivory) 62%, transparent)",
+                  color: on ? "var(--primary-foreground)" : "var(--muted-foreground)",
+                  boxShadow: on ? "0 6px 16px -8px oklch(0.4 0.06 60 / 0.5)" : "none",
+                  border: `1px solid ${on ? "transparent" : "color-mix(in oklab, var(--gold) 38%, transparent)"}`,
+                }}
+              >
+                {d.date.replace(" October", " Oct")}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-4 text-center font-body text-[0.62rem] tracking-[0.2em] uppercase text-muted-foreground">
+          {activeDay.weekday}
+        </p>
 
-            {day.events.map((event, i) => (
-              <div key={event.slug} className={i ? "mt-2.5" : ""}>
-                {event.followsPrevious && (
-                  <p className="mb-2 font-display text-[0.82rem] text-muted-foreground italic">
-                    Followed by
-                  </p>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setOpen({ event, day })}
-                  className="flex w-full items-center gap-3 rounded-xl bg-pearl px-3.5 py-2.5 text-left ring-1 ring-[var(--border)] transition-all hover:ring-[var(--bronze)]/45 active:scale-[0.99]"
-                  style={{ boxShadow: "0 1px 3px oklch(0.28 0.02 60 / 0.07)" }}
-                  aria-label={`${event.name} — see date, venue and dress code`}
-                >
-                  <span className="min-w-0 flex-1">
-                    <span className="flex items-baseline justify-between gap-2">
-                      <span className="font-display text-[1.1rem] leading-tight text-foreground">
-                        {event.name}
-                      </span>
-                      <span className="shrink-0 font-body text-[0.66rem] tracking-wide text-muted-foreground">
-                        {event.time}
-                      </span>
-                    </span>
-                    {(event.theme || event.dressCode) && (
-                      <span className="mt-1 block font-body text-[0.7rem] leading-snug text-muted-foreground">
-                        {event.theme && <span className="text-bronze italic">{event.theme}</span>}
-                        {event.theme && event.dressCode && (
-                          <span aria-hidden="true" className="mx-1.5 opacity-40">
-                            ·
-                          </span>
-                        )}
-                        {event.dressCode && <span>Dress: {event.dressCode}</span>}
-                      </span>
-                    )}
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className="flex size-6 shrink-0 items-center justify-center rounded-full bg-bronze/12 font-body text-[0.7rem] text-bronze"
-                  >
-                    ›
-                  </span>
-                </button>
-              </div>
-            ))}
-          </div>
-        ))}
+        <div className="mt-8 flex flex-col gap-4">
+          {activeDay.events.map((event) => (
+            <button
+              key={event.slug}
+              type="button"
+              onClick={() => setOpen({ event, day: activeDay })}
+              aria-label={`${event.name} — see date, venue and dress code`}
+              className="relative overflow-hidden rounded-2xl px-6 py-7 text-center transition-all active:scale-[0.99]"
+              style={{
+                // Warm and translucent rather than a white panel, so the
+                // illustration behind the page still reads through it.
+                background: "color-mix(in oklab, var(--ivory) 68%, transparent)",
+                backdropFilter: "blur(3px)",
+                WebkitBackdropFilter: "blur(3px)",
+                border: "1px solid color-mix(in oklab, var(--gold) 34%, transparent)",
+                boxShadow: "0 10px 26px -16px oklch(0.32 0.03 60 / 0.4)",
+              }}
+            >
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 top-0 h-px"
+                style={{ background: "var(--gradient-gold)" }}
+              />
+
+              {/* Name and theme only — time, venue and dress code live in the
+                  sheet behind "View details". */}
+              <span className="block font-display text-2xl text-foreground">{event.name}</span>
+              {event.theme && <span className="mt-1 block font-script text-lg text-bronze">{event.theme}</span>}
+
+              <span aria-hidden="true" className="rule-gold mx-auto mt-4 mb-4 block w-16" />
+
+              <span className="inline-flex items-center gap-1.5 font-body text-[0.62rem] font-medium tracking-[0.16em] uppercase text-bronze">
+                View details <span aria-hidden="true">→</span>
+              </span>
+            </button>
+          ))}
+        </div>
 
         <p className="mx-auto mt-8 max-w-[21rem] text-center font-body text-[0.66rem] leading-relaxed text-muted-foreground/80 italic">
           {TIMING_NOTE}
@@ -494,26 +509,20 @@ function EventsSection() {
                 <dd className="mt-1.5 font-body text-sm text-foreground/85">
                   {open.event.time}
                   {open.event.tentative && (
-                    <span className="block text-xs text-muted-foreground italic">
-                      Timing may change
-                    </span>
+                    <span className="block text-xs text-muted-foreground italic">Timing may change</span>
                   )}
                 </dd>
               </div>
 
               <div>
                 <dt className="eyebrow text-[0.5rem]">Venue</dt>
-                <dd className="mt-1.5 font-body text-sm text-foreground/85">
-                  {open.event.venue.name}
-                </dd>
+                <dd className="mt-1.5 font-body text-sm text-foreground/85">{open.event.venue.name}</dd>
               </div>
 
               {open.event.dressCode && (
                 <div>
                   <dt className="eyebrow text-[0.5rem]">Dress code</dt>
-                  <dd className="mt-1.5 font-body text-sm text-foreground/85">
-                    {open.event.dressCode}
-                  </dd>
+                  <dd className="mt-1.5 font-body text-sm text-foreground/85">{open.event.dressCode}</dd>
                 </div>
               )}
             </dl>

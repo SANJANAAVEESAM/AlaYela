@@ -79,6 +79,7 @@ export const EVENT_DAYS: EventDay[] = [
       {
         slug: "mehendi",
         name: "Mehendi",
+        theme: "Carnival",
         time: "5:00 PM onwards",
         tentative: true,
         followsPrevious: true,
@@ -136,6 +137,7 @@ export const EVENT_DAYS: EventDay[] = [
       {
         slug: "wedding",
         name: "Wedding Ceremony",
+        theme: "Telugu Elegance",
         time: "Muhurtham: 7:25 PM",
         venue: { name: "To be announced" }, // TODO(venue)
         img: eventPelli,
