@@ -34,6 +34,7 @@ import { Reveal } from "./Reveal";
 import { ScrollReveal } from "./ScrollReveal";
 import { EVENT_THEMES, EventScenery } from "./eventThemes";
 import { copyText } from "@/lib/clipboard";
+import { submitRsvp } from "@/lib/rsvp";
 
 /* ---------------------------------- shell ---------------------------------- */
 
@@ -941,7 +942,8 @@ function Rsvp() {
   const [attending, setAttending] = useState<"yes" | "no" | null>(null);
   const [picked, setPicked] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState<{ waHref: string } | null>(null);
+  const [sending, setSending] = useState(false);
+  const [submitted, setSubmitted] = useState<{ waHref: string; recorded: boolean } | null>(null);
   const [showPetals, setShowPetals] = useState(false);
 
   const allPicked = picked.length === allEvents.length;
@@ -951,7 +953,7 @@ function Rsvp() {
     setPicked((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
   };
 
-  const submit = (e: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const first = String(form.get("first") ?? "").trim();
@@ -980,9 +982,37 @@ function Rsvp() {
       .filter(Boolean)
       .join("\n");
 
-    setSubmitted({ waHref: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}` });
-    setShowPetals(true);
-    setTimeout(() => setShowPetals(false), 9000);
+    const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+
+    // Record it before celebrating. If the sheet cannot be reached we say so
+    // and fall back to WhatsApp, rather than thanking someone whose RSVP was
+    // quietly dropped.
+    setSending(true);
+    setError(null);
+    let recorded = false;
+    try {
+      const result = await submitRsvp({
+        data: {
+          firstName: first,
+          lastName: last,
+          attending,
+          guests: Number(guests) || 1,
+          travellingFrom: from,
+          events: coming,
+          note,
+        },
+      });
+      recorded = result.ok;
+    } catch {
+      recorded = false;
+    }
+    setSending(false);
+
+    setSubmitted({ waHref, recorded });
+    if (recorded) {
+      setShowPetals(true);
+      setTimeout(() => setShowPetals(false), 9000);
+    }
   };
 
   return (
@@ -997,20 +1027,43 @@ function Rsvp() {
 
         {submitted ? (
           <div className="flex flex-col items-center gap-6 text-center">
-            <p className="font-display text-xl text-foreground italic">
-              Thank you — we can't wait to celebrate with you.
-            </p>
-            <a
-              href={submitted.waHref}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full bg-bronze px-8 py-4 font-body text-[0.66rem] font-medium tracking-[0.24em] uppercase text-primary-foreground transition-opacity hover:opacity-90"
-            >
-              Send it to us on WhatsApp
-            </a>
-            <p className="font-body text-xs text-muted-foreground">
-              Tapping the button opens WhatsApp with your RSVP pre-filled.
-            </p>
+            {submitted.recorded ? (
+              <>
+                <p className="font-display text-xl text-foreground italic">
+                  Thank you — we can't wait to celebrate with you.
+                </p>
+                <p className="font-body text-xs text-muted-foreground">
+                  Your RSVP has reached Lasya &amp; Avyay. Nothing more to do.
+                </p>
+                {/* Now genuinely optional: the answer is already recorded. */}
+                <a
+                  href={submitted.waHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-body text-[0.66rem] font-medium tracking-[0.2em] uppercase text-bronze underline underline-offset-4"
+                >
+                  Add a note on WhatsApp
+                </a>
+              </>
+            ) : (
+              <>
+                <p className="font-display text-xl text-foreground italic">
+                  We couldn't save your RSVP just now.
+                </p>
+                <p className="mx-auto max-w-[19rem] font-body text-xs leading-relaxed text-muted-foreground">
+                  Sorry — something went wrong at our end, not yours. Please send
+                  it to us on WhatsApp instead; it's already written out for you.
+                </p>
+                <a
+                  href={submitted.waHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-full bg-bronze px-8 py-4 font-body text-[0.66rem] font-medium tracking-[0.24em] uppercase text-primary-foreground transition-opacity hover:opacity-90"
+                >
+                  Send it on WhatsApp
+                </a>
+              </>
+            )}
           </div>
         ) : (
           <form onSubmit={submit} className="flex flex-col gap-3.5" noValidate>
@@ -1144,9 +1197,10 @@ function Rsvp() {
 
             <button
               type="submit"
-              className="mt-2 rounded-full bg-bronze px-8 py-4 font-body text-[0.68rem] font-medium tracking-[0.28em] uppercase text-primary-foreground transition-opacity hover:opacity-90 active:scale-[0.99]"
+              disabled={sending}
+              className="mt-2 rounded-full bg-bronze px-8 py-4 font-body text-[0.68rem] font-medium tracking-[0.28em] uppercase text-primary-foreground transition-opacity hover:opacity-90 active:scale-[0.99] disabled:opacity-60"
             >
-              Send RSVP
+              {sending ? "Sending…" : "Send RSVP"}
             </button>
           </form>
         )}
