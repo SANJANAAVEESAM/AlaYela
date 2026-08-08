@@ -204,6 +204,17 @@ type Theme = {
   scrim?: string;
   /** Which part of the artwork to favour when it is cropped to the panel. */
   imagePosition?: string;
+  /**
+   * Crop and strength for the faint wash behind an event card.
+   *
+   * Needs its own values rather than reusing imagePosition: every one of these
+   * artworks is composed with its motifs at the top and bottom and a bare
+   * middle, and a card is a wide, short letterbox — so the default centre crop
+   * lands squarely on the empty part and the card reads blank.
+   */
+  cardPosition?: string;
+  /** Pale artworks need more of it; the dark Sangeet needs far less. */
+  cardOpacity?: number;
   /** Shifts the details clear of whatever the artwork puts in their way. */
   contentStyle?: CSSProperties;
   art: (t: Tones) => ReactNode;
@@ -236,6 +247,8 @@ export const EVENT_THEMES: Record<EventTheme, Theme> = {
         "radial-gradient(130% 72% at 50% 0%, oklch(0.958 0.024 86) 0%, oklch(0.936 0.03 82) 52%, oklch(0.915 0.034 78) 100%)",
     },
     image: haldiArt,
+    cardPosition: "center 80%",
+    cardOpacity: 0.24,
     scrim:
       "linear-gradient(180deg, oklch(0.94 0.028 84 / 0.08) 0%, oklch(0.94 0.028 84 / 0.26) 48%, oklch(0.93 0.032 82 / 0.68) 78%, oklch(0.93 0.032 82 / 0.54) 100%)",
     art: (t) => <CarnivalArt {...t} />,
@@ -253,6 +266,8 @@ export const EVENT_THEMES: Record<EventTheme, Theme> = {
         "radial-gradient(130% 72% at 50% 0%, oklch(0.975 0.006 90) 0%, oklch(0.958 0.01 100) 55%, oklch(0.942 0.014 118) 100%)",
     },
     image: mehendiArt,
+    cardPosition: "center 92%",
+    cardOpacity: 0.24,
     // A pale ground needs almost nothing up top; the weight goes where the
     // lawn and figures are, so the details stay legible over them.
     scrim:
@@ -264,12 +279,16 @@ export const EVENT_THEMES: Record<EventTheme, Theme> = {
   pellikuthuru: {
     ...courtyard,
     image: pellikuthuruArt,
+    cardPosition: "center 86%",
+    cardOpacity: 0.22,
     scrim:
       "linear-gradient(180deg, oklch(0.95 0.03 88 / 0.1) 0%, oklch(0.95 0.03 88 / 0.32) 44%, oklch(0.94 0.034 86 / 0.7) 76%, oklch(0.94 0.034 86 / 0.56) 100%)",
   },
   pellikoduku: {
     ...courtyard,
     image: pellikodukuArt,
+    cardPosition: "center 72%",
+    cardOpacity: 0.24,
     scrim:
       "linear-gradient(180deg, oklch(0.95 0.03 88 / 0.1) 0%, oklch(0.95 0.03 88 / 0.32) 44%, oklch(0.94 0.034 86 / 0.7) 76%, oklch(0.94 0.034 86 / 0.56) 100%)",
   },
@@ -286,6 +305,8 @@ export const EVENT_THEMES: Record<EventTheme, Theme> = {
         "radial-gradient(120% 70% at 50% 0%, oklch(0.26 0.06 268) 0%, oklch(0.21 0.06 266) 55%, oklch(0.17 0.05 264) 100%)",
     },
     image: sangeetArt,
+    cardPosition: "center 88%",
+    cardOpacity: 0.13,
     // Firmest through the middle, where the details sit; eased off at the
     // bottom so the dancers stay visible.
     scrim:
@@ -305,6 +326,8 @@ export const EVENT_THEMES: Record<EventTheme, Theme> = {
         "radial-gradient(130% 72% at 50% 0%, oklch(0.972 0.014 88) 0%, oklch(0.952 0.018 84) 55%, oklch(0.934 0.022 80) 100%)",
     },
     image: pelliArt,
+    cardPosition: "30% 88%",
+    cardOpacity: 0.24,
     // The arch interior is already a clean field, so barely anything up top —
     // just enough at the foot to carry type over the lamps and offerings.
     // Two washes: one down the page for the lamps and offerings at the foot,

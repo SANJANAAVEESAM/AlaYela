@@ -583,37 +583,36 @@ function EventsSection() {
                 style={{ background: "var(--gradient-gold)" }}
               />
 
-              {/* A crop of the event's own artwork, so the card is recognisable
-                  as Haldi or Sangeet before the name is read. Same image the
-                  full-page sheet opens onto, which makes the tap feel continuous. */}
+              {/* The event's own artwork washed across the whole card rather
+                  than stamped into a circle — six repeated circles down the
+                  column read as clutter. Cropped per event, since these
+                  artworks all leave their middles bare. */}
               {EVENT_THEMES[event.themeKey].image && (
-                <span
+                <img
+                  src={EVENT_THEMES[event.themeKey].image}
+                  alt=""
                   aria-hidden="true"
-                  className="mx-auto mb-4 block size-16 overflow-hidden rounded-full"
+                  loading="lazy"
+                  className="pointer-events-none absolute inset-0 h-full w-full object-cover"
                   style={{
-                    border: "1px solid color-mix(in oklab, var(--gold) 50%, transparent)",
-                    boxShadow: "0 4px 12px -6px oklch(0.3 0.03 60 / 0.45)",
+                    opacity: EVENT_THEMES[event.themeKey].cardOpacity ?? 0.2,
+                    objectPosition: EVENT_THEMES[event.themeKey].cardPosition ?? "center bottom",
                   }}
-                >
-                  <img
-                    src={EVENT_THEMES[event.themeKey].image}
-                    alt=""
-                    loading="lazy"
-                    className="size-full object-cover"
-                    style={{ objectPosition: EVENT_THEMES[event.themeKey].imagePosition ?? "center" }}
-                  />
-                </span>
+                />
               )}
 
-              {/* Name and theme only — time, venue and dress code live in the
-                  sheet behind "View details". */}
-              <span className="block font-display text-2xl text-foreground">{event.name}</span>
-              {event.theme && <span className="mt-1 block font-script text-lg text-bronze">{event.theme}</span>}
+              {/* Lifted clear of the wash behind it. */}
+              <span className="relative block">
+                {/* Name and theme only — time, venue and dress code live in the
+                    sheet behind "View details". */}
+                <span className="block font-display text-2xl text-foreground">{event.name}</span>
+                {event.theme && <span className="mt-1 block font-script text-lg text-bronze">{event.theme}</span>}
 
-              <span aria-hidden="true" className="rule-gold mx-auto mt-4 mb-4 block w-16" />
+                <span aria-hidden="true" className="rule-gold mx-auto mt-4 mb-4 block w-16" />
 
-              <span className="inline-flex items-center gap-1.5 font-body text-[0.62rem] font-medium tracking-[0.16em] uppercase text-bronze">
-                View details <span aria-hidden="true">→</span>
+                <span className="inline-flex items-center gap-1.5 font-body text-[0.62rem] font-medium tracking-[0.16em] uppercase text-bronze">
+                  View details <span aria-hidden="true">→</span>
+                </span>
               </span>
             </button>
           ))}
