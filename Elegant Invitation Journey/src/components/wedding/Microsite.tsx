@@ -6,6 +6,7 @@ import storyOodenny from "@/assets/story-oodenny.jpg";
 
 import {
   CONTACT_EMAIL,
+  CONTACTS,
   COUPLE,
   DETAIL_CARDS,
   type DetailIcon,
@@ -1046,6 +1047,56 @@ function Faqs() {
       <Modal open={contactOpen} onClose={() => setContactOpen(false)} label="Contact the couple">
         <div className="flex flex-col items-center gap-5 pt-3 pb-4 text-center">
           <p className="font-display text-2xl text-foreground">We'd love to hear from you</p>
+
+          {/* Numbers first: most guests opening this want to call or message,
+              and a tel: link dials straight from a phone. */}
+          <div className="w-full">
+            {CONTACTS.map((person, i) => (
+              <div
+                key={person.tel}
+                className="flex items-center justify-between gap-3 py-3"
+                style={{
+                  borderTop:
+                    i === 0 ? "none" : "1px solid color-mix(in oklab, var(--gold) 28%, transparent)",
+                }}
+              >
+                <div className="text-left">
+                  <p className="font-display text-[1.15rem] leading-tight font-semibold text-ink-strong">
+                    {person.name}
+                  </p>
+                  <p className="font-body text-[0.78rem] text-muted-foreground">{person.display}</p>
+                </div>
+
+                <div className="flex shrink-0 gap-2">
+                  <a
+                    href={`tel:${person.tel}`}
+                    aria-label={`Call ${person.name}`}
+                    className="rounded-full px-3.5 py-2 font-body text-[0.6rem] font-medium tracking-[0.14em] uppercase"
+                    style={{ background: "var(--bronze)", color: "var(--primary-foreground)" }}
+                  >
+                    Call
+                  </a>
+                  <a
+                    href={`https://wa.me/${person.tel.replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Message ${person.name} on WhatsApp`}
+                    className="rounded-full border px-3.5 py-2 font-body text-[0.6rem] font-medium tracking-[0.14em] uppercase text-bronze-deep"
+                    style={{ borderColor: "color-mix(in oklab, var(--gold) 45%, transparent)" }}
+                  >
+                    Chat
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <span
+            aria-hidden="true"
+            className="block h-px w-12"
+            style={{ background: "var(--gold)", opacity: 0.55 }}
+          />
+
           <p className="font-body text-sm break-all text-muted-foreground">{CONTACT_EMAIL}</p>
           <div className="flex gap-2.5">
             <button

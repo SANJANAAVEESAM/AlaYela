@@ -25,6 +25,15 @@ export const WHATSAPP_NUMBER = "18326686089";
 
 export const CONTACT_EMAIL = "lasyaandavyay@gmail.com";
 
+/**
+ * Who to call. `tel` is digits only so the dialler accepts it; `display` is
+ * what a guest reads.
+ */
+export const CONTACTS = [
+  { name: COUPLE.bride, tel: "+18326689442", display: "+1 832 668 9442" },
+  { name: COUPLE.groom, tel: "+17049066859", display: "+1 704 906 6859" },
+];
+
 import type { EventTheme } from "./eventThemes";
 
 /**
