@@ -4,13 +4,24 @@ export const COUPLE = { bride: "Lasya", groom: "Avyay" };
 /** ⚠️ Year is unconfirmed (reference doc said 2027) — change it here only. */
 export const WEDDING_YEAR = 2026;
 
-/** Muhurtham — Oct 31, 7:25 PM IST (13:55 UTC). */
-export const WEDDING_DATE = new Date(Date.UTC(WEDDING_YEAR, 9, 31, 13, 55));
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/**
+ * A wall-clock Eastern time, as an instant.
+ *
+ * Late October sits before US daylight saving ends — the first Sunday in
+ * November — so these dates are EDT, UTC-4, in 2026 and 2027 alike. Month is
+ * zero-based, matching Date.
+ */
+const ET = (month: number, day: number, hour: number, minute: number) =>
+  new Date(`${WEDDING_YEAR}-${pad(month + 1)}-${pad(day)}T${pad(hour)}:${pad(minute)}:00-04:00`);
+
+/** Muhurtham — Oct 31, 7:25 PM Eastern. */
+export const WEDDING_DATE = ET(9, 31, 19, 25);
 
 export const WEDDING_DATE_RANGE = `October 29–31, ${WEDDING_YEAR}`;
 
-// TODO(phone): replace with the couple's real WhatsApp number (country code, no +).
-export const WHATSAPP_NUMBER = "919000000000";
+export const WHATSAPP_NUMBER = "18326686089";
 
 export const CONTACT_EMAIL = "lasyaandavyay@gmail.com";
 
@@ -23,9 +34,6 @@ export const CONTACT_EMAIL = "lasyaandavyay@gmail.com";
 export const PHOTO_UPLOAD_URL: string | undefined = undefined;
 
 import type { EventTheme } from "./eventThemes";
-
-const IST = (month: number, day: number, hour: number, minute: number) =>
-  new Date(Date.UTC(WEDDING_YEAR, month, day, hour - 5, minute - 30));
 
 export type Venue = {
   name: string;
@@ -76,8 +84,8 @@ export const EVENT_DAYS: EventDay[] = [
         time: "12:00 PM onwards",
         tentative: true,
         venue: { name: "To be announced" }, // TODO(venue)
-        start: IST(9, 29, 12, 0),
-        end: IST(9, 29, 16, 0),
+        start: ET(9, 29, 12, 0),
+        end: ET(9, 29, 16, 0),
       },
       {
         slug: "mehendi",
@@ -88,8 +96,8 @@ export const EVENT_DAYS: EventDay[] = [
         tentative: true,
         followsPrevious: true,
         venue: { name: "To be announced" }, // TODO(venue)
-        start: IST(9, 29, 17, 0),
-        end: IST(9, 29, 22, 0),
+        start: ET(9, 29, 17, 0),
+        end: ET(9, 29, 22, 0),
       },
     ],
   },
@@ -106,8 +114,8 @@ export const EVENT_DAYS: EventDay[] = [
         tentative: true,
         dressCode: "Anything except sarees",
         venue: { name: "To be announced" }, // TODO(venue)
-        start: IST(9, 30, 9, 30),
-        end: IST(9, 30, 13, 0),
+        start: ET(9, 30, 9, 30),
+        end: ET(9, 30, 13, 0),
       },
       {
         slug: "sangeet",
@@ -122,8 +130,8 @@ export const EVENT_DAYS: EventDay[] = [
           mapsUrl:
             "https://maps.google.com/maps/place//data=!4m2!3m1!1s0x88541d7fe97a02a5:0x54f177497cd295da?entry=s&sa=X&ved=2ahUKEwiV4qiysf6VAxWyj4kEHTiHF2IQ4kB6BAgEEAA&hl=en",
         },
-        start: IST(9, 30, 18, 0),
-        end: IST(9, 31, 0, 0),
+        start: ET(9, 30, 18, 0),
+        end: ET(9, 31, 0, 0),
       },
     ],
   },
@@ -139,8 +147,8 @@ export const EVENT_DAYS: EventDay[] = [
         time: "11:15 AM onwards",
         tentative: true,
         venue: { name: "To be announced" }, // TODO(venue)
-        start: IST(9, 31, 11, 15),
-        end: IST(9, 31, 14, 0),
+        start: ET(9, 31, 11, 15),
+        end: ET(9, 31, 14, 0),
       },
       {
         slug: "wedding",
@@ -154,8 +162,8 @@ export const EVENT_DAYS: EventDay[] = [
           mapsUrl:
             "https://maps.google.com/maps/place//data=!4m2!3m1!1s0x8856a90c1f2caa73:0xcc55dd654a58f67d?entry=s&sa=X&ved=2ahUKEwirvNPhsf6VAxX238kDHdhBNe4Q4kB6BAgVEAA&hl=en",
         },
-        start: IST(9, 31, 19, 25),
-        end: IST(9, 31, 23, 59),
+        start: ET(9, 31, 19, 25),
+        end: ET(9, 31, 23, 59),
       },
     ],
   },
@@ -177,9 +185,9 @@ export const TIMING_NOTE =
 export const FULL_WEDDING_CAL = {
   title: `${COUPLE.bride} & ${COUPLE.groom} — Wedding Celebrations`,
   description: `Three days of celebrations for the wedding of ${COUPLE.bride} & ${COUPLE.groom}. Muhurtham on October 31 at 7:25 PM.`,
-  location: "Hyderabad, Telangana", // TODO(venue)
-  startUtc: IST(9, 29, 12, 0).toISOString(),
-  endUtc: IST(9, 31, 23, 0).toISOString(),
+  location: "Charlotte, North Carolina",
+  startUtc: ET(9, 29, 12, 0).toISOString(),
+  endUtc: ET(9, 31, 23, 0).toISOString(),
 };
 
 export const GALLERY = [
@@ -193,7 +201,7 @@ export type DetailIcon = "bed" | "plane" | "hotel" | "car";
 // TODO(content): all detail-card copy below is placeholder.
 export const DETAIL_CARDS: { title: string; icon: DetailIcon; body: string }[] = [
   { title: "Accommodation", icon: "bed", body: "Room blocks and booking codes — coming soon." },
-  { title: "Travel", icon: "plane", body: "Airports, trains and getting to Hyderabad — coming soon." },
+  { title: "Travel", icon: "plane", body: "Airports, driving and getting to Charlotte — coming soon." },
   { title: "Nearby Hotels", icon: "hotel", body: "Our favourite places to stay near the venues — coming soon." },
   { title: "Transportation", icon: "car", body: "Shuttle timings between the hotels and venues — coming soon." },
 ];

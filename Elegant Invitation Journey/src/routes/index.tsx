@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { Envelope } from "@/components/wedding/Envelope";
 import { Microsite } from "@/components/wedding/Microsite";
 
-const TITLE = "Lasya & Avyay — October 29–31, 2026 · Hyderabad";
+const TITLE = "Lasya & Avyay — October 29–31, 2026 · Charlotte, NC";
 const DESCRIPTION =
-  "Open our invitation: three days of celebrations, venue details, dress codes and RSVP for the wedding of Lasya & Avyay, October 29–31, 2026 in Hyderabad.";
+  "Open our invitation: three days of celebrations, venue details, dress codes and RSVP for the wedding of Lasya & Avyay, October 29–31, 2026 near Charlotte, North Carolina.";
 
 export const Route = createFileRoute("/")({
   head: () => ({

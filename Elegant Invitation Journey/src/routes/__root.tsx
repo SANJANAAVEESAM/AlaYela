@@ -77,12 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Lasya & Avyay" },
-      { name: "description", content: "The wedding of Lasya & Avyay — October 29–31, 2026, Hyderabad." },
+      { name: "description", content: "The wedding of Lasya & Avyay — October 29–31, 2026, Charlotte, North Carolina." },
       { property: "og:title", content: "Lasya & Avyay" },
-      { property: "og:description", content: "The wedding of Lasya & Avyay — October 29–31, 2026, Hyderabad." },
+      { property: "og:description", content: "The wedding of Lasya & Avyay — October 29–31, 2026, Charlotte, North Carolina." },
       { property: "og:type", content: "website" },
       { property: "og:image", content: ogImage },
       { name: "twitter:card", content: "summary_large_image" },
+      // Unlisted rather than private — see public/robots.txt.
+      { name: "robots", content: "noindex, nofollow" },
     ],
     links: [
       {

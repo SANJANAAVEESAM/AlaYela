@@ -38,9 +38,11 @@ export default defineConfig(({ command }) => ({
       server: { entry: "server" },
     }),
     // Nitro provides the production server build; the dev server doesn't need it.
-    // No preset is set, so Nitro falls back to its own default (Node) — set an
-    // explicit preset (e.g. "cloudflare-module", "vercel") for your host if needed.
-    ...(command === "build" ? [nitro()] : []),
+    // Vercel sets VERCEL=1 during its build. Locally we stay on node-server so
+    // `node .output/server/index.mjs` keeps working for checking a real build.
+    ...(command === "build"
+      ? [nitro({ preset: process.env.VERCEL ? "vercel" : "node-server" })]
+      : []),
     viteReact(),
   ],
 }));
