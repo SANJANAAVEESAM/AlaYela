@@ -94,6 +94,8 @@ export type WeddingEvent = {
   dressCode?: DressCode;
   /** Shared folder for this celebration's photos. */
   photosUrl?: string;
+  /** Held at the same place as the event above it, so they list as one. */
+  sharesVenueWithPrevious?: boolean;
   /** TODO(content): Mehendi's dress code is an inspiration photo, not text —
    *  drop the image in src/assets and point this at it. */
   dressCodeImage?: string;
@@ -146,6 +148,7 @@ export const EVENT_DAYS: EventDay[] = [
           note: "Any colour at all — just keep it one solid block rather than a print.",
         },
         photosUrl: GALLERY_FOLDERS[0].url,
+        sharesVenueWithPrevious: true,
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 29, 17, 0),
         end: ET(9, 29, 22, 0),
@@ -248,7 +251,7 @@ export const FULL_WEDDING_CAL = {
   endUtc: ET(9, 31, 23, 0).toISOString(),
 };
 
-export type DetailIcon = "bed" | "plane" | "camera" | "car";
+export type DetailIcon = "bed" | "plane" | "camera" | "pin";
 
 // TODO(content): hotel names, rates, booking codes and shuttle timings still
 // need to be filled in by the couple — the copy below says so plainly rather
@@ -279,9 +282,9 @@ export const DETAIL_CARDS: {
     gallery: true,
   },
   {
-    title: "Transportation",
-    icon: "car",
-    body: "Please plan on driving or booking a ride — Uber and Lyft cover the whole area reliably. Tap any address below for directions.",
+    title: "Venues",
+    icon: "pin",
+    body: "Where each celebration is held. Tap any address for directions.\n\nPlan on driving or booking a ride — Uber and Lyft cover the whole area reliably.",
     venues: true,
   },
 ];

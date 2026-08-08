@@ -779,13 +779,10 @@ const DETAIL_ICONS: Record<DetailIcon, ReactNode> = {
       <path d="M37.5 16h2.5" />
     </g>
   ),
-  car: (
+  pin: (
     <g {...iconStroke}>
-      <path d="M5 24v-6l4-8h22l6 8h5v6" />
-      <path d="M5 24h4M19 24h10M39 24h4" />
-      <circle cx="14" cy="24" r="4" />
-      <circle cx="34" cy="24" r="4" />
-      <path d="M12 10v8M24 10v8" />
+      <path d="M24 31.5s10.5-9.6 10.5-17.2a10.5 10.5 0 1 0-21 0C13.5 21.9 24 31.5 24 31.5z" />
+      <circle cx="24" cy="14" r="4.1" />
     </g>
   ),
 };
@@ -887,7 +884,22 @@ function DetailCards() {
  * date a guest cannot tell which venue belongs to which morning.
  */
 function VenueList() {
-  const rows = EVENT_DAYS.flatMap((day) => day.events.map((event) => ({ day, event })));
+  // Events sharing a venue collapse into one row — "Haldi & Mehendi" rather
+  // than the same address twice. Driven by an explicit flag, not by matching
+  // venue names: four venues currently read "To be announced", and matching on
+  // that would merge celebrations that have nothing to do with each other.
+  const rows: { dates: string[]; names: string[]; event: WeddingEvent }[] = [];
+  EVENT_DAYS.forEach((day) =>
+    day.events.forEach((event) => {
+      const previous = rows[rows.length - 1];
+      if (event.sharesVenueWithPrevious && previous) {
+        previous.names.push(event.name);
+        if (!previous.dates.includes(day.date)) previous.dates.push(day.date);
+      } else {
+        rows.push({ dates: [day.date], names: [event.name], event });
+      }
+    }),
+  );
 
   return (
     <div className="mx-auto mt-9 max-w-[20rem] text-left">
@@ -895,8 +907,9 @@ function VenueList() {
         Venues
       </p>
 
-      {rows.map(({ day, event }, i) => {
+      {rows.map(({ dates, names, event }, i) => {
         const directions = venueMapsHref(event.venue);
+        const label = names.join(" & ");
         return (
           <div
             key={event.slug}
@@ -910,9 +923,9 @@ function VenueList() {
               {/* The date stays quiet so the bold event name reads as the label
                   for the venue below, rather than the two competing. */}
               <p className="font-body text-[0.58rem] tracking-[0.18em] uppercase text-muted-foreground">
-                {day.date.replace(" October", " Oct")}
+                {dates.map((d) => d.replace(" October", " Oct")).join(" & ")}
                 <span aria-hidden="true"> · </span>
-                <span className="font-bold text-foreground/75">{event.name}</span>
+                <span className="font-bold text-foreground/75">{label}</span>
               </p>
 
               {/* The venue is what this list is for, so it is the loudest line. */}
@@ -938,7 +951,7 @@ function VenueList() {
                 href={directions}
                 target="_blank"
                 rel="noreferrer"
-                aria-label={`Directions to ${event.venue.name} for ${event.name}`}
+                aria-label={`Directions to ${event.venue.name} for ${label}`}
                 className="shrink-0 rounded-full px-3.5 py-2 font-body text-[0.62rem] font-medium tracking-[0.14em] uppercase transition-opacity hover:opacity-90"
                 style={{ background: "var(--bronze)", color: "var(--primary-foreground)" }}
               >
