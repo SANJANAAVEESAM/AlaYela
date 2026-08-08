@@ -685,8 +685,10 @@ function EventsSection() {
 
                 <p className="font-display text-xl">{open.event.venue.name}</p>
 
-                <div>
-                  {directions ? (
+                {/* Nothing stands in for a missing map: the venue line above
+                    already says it is still to be announced. */}
+                {directions && (
+                  <div>
                     <a
                       href={directions}
                       target="_blank"
@@ -697,12 +699,8 @@ function EventsSection() {
                       {open.event.venue.address ?? "Open in Maps"}
                       <span aria-hidden="true">↗</span>
                     </a>
-                  ) : (
-                    <span className="font-body text-sm italic" style={{ color: look?.inkSoft }}>
-                      A map will appear here once the venue is confirmed.
-                    </span>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {open.event.dressCode && (
                   <p className="font-body text-sm" style={{ color: look?.inkSoft }}>
@@ -712,9 +710,11 @@ function EventsSection() {
               </div>
 
               {/* No per-event calendar button: the one under the schedule adds
-                  all three days at once, which is what guests actually want. */}
-              <div className="mt-10 flex flex-col items-center gap-3">
-                {PHOTO_UPLOAD_URL ? (
+                  all three days at once, which is what guests actually want.
+                  The photo-album button appears only once there is a link to
+                  point it at — an empty promise is worse than saying nothing. */}
+              {PHOTO_UPLOAD_URL && (
+                <div className="mt-10 flex flex-col items-center gap-3">
                   <a
                     href={PHOTO_UPLOAD_URL}
                     target="_blank"
@@ -723,12 +723,8 @@ function EventsSection() {
                   >
                     Share your photos
                   </a>
-                ) : (
-                  <p className="max-w-[19rem] font-body text-xs leading-relaxed italic" style={{ color: look?.inkSoft }}>
-                    A shared album for your own photos will appear here closer to the day.
-                  </p>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         )}
