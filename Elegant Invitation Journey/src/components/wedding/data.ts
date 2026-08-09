@@ -27,6 +27,7 @@ export const CONTACT_EMAIL = "lasyaandavyay@gmail.com";
 
 /** Credited in the closing line. */
 export const DESIGNER = "Sanjana Veesam";
+export const DESIGNER_URL = "https://www.instagram.com/sanjanaa_vv/";
 
 /**
  * Who to call. `tel` is the number that rings; `whatsapp` is only set when the

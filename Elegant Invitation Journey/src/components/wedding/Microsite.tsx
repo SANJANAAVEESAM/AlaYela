@@ -9,6 +9,7 @@ import {
   CONTACTS,
   COUPLE,
   DESIGNER,
+  DESIGNER_URL,
   DETAIL_CARDS,
   type DetailIcon,
   EVENT_DAYS,
@@ -1514,8 +1515,18 @@ export function Microsite({ live }: { live: boolean }) {
             className="h-px w-8"
             style={{ background: "var(--gold)", opacity: 0.5 }}
           />
+          {/* Only the name is the link, not the whole line — "Designed by" is
+              not what a guest would tap. */}
           <p className="shrink-0 font-body text-[0.55rem] tracking-[0.24em] uppercase text-muted-foreground/60">
-            Designed by {DESIGNER}
+            Designed by{" "}
+            <a
+              href={DESIGNER_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="underline decoration-[color-mix(in_oklab,var(--gold)_60%,transparent)] underline-offset-4 transition-colors hover:text-muted-foreground"
+            >
+              {DESIGNER}
+            </a>
           </p>
           <span
             aria-hidden="true"
