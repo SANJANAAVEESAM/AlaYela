@@ -1490,7 +1490,7 @@ export function Microsite({ live }: { live: boolean }) {
         <Rsvp />
 
         {/* Closing */}
-        <section className="px-5 pt-6 pb-24 text-center">
+        <section className="px-5 pt-6 pb-16 text-center">
           <Reveal>
             <p className="mx-auto max-w-[16rem] font-script text-3xl leading-snug text-foreground/90">
               We can't wait to celebrate with you
@@ -1498,14 +1498,17 @@ export function Microsite({ live }: { live: boolean }) {
             <p className="mt-8 font-body text-[0.6rem] tracking-[0.3em] uppercase text-muted-foreground">
               {COUPLE.bride} & {COUPLE.groom}
             </p>
-
-            {/* Designer credit. Set a step quieter than the couple's names, so
-                it reads as a signature rather than competing with them. */}
-            <p className="mt-5 font-body text-[0.55rem] tracking-[0.24em] uppercase text-muted-foreground/65">
-              By {DESIGNER}
-            </p>
           </Reveal>
         </section>
+
+        {/* Designer credit, last thing on the page. Kept out of the closing
+            block so it reads as a signature under the whole invitation rather
+            than as part of the couple's sign-off. */}
+        <footer className="px-5 pb-12 text-center">
+          <p className="font-body text-[0.55rem] tracking-[0.24em] uppercase text-muted-foreground/60">
+            By {DESIGNER}
+          </p>
+        </footer>
       </main>
     </div>
   );
