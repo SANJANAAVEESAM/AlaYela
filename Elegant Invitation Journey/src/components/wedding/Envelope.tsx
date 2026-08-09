@@ -82,8 +82,8 @@ export function Envelope({ onOpened }: { onOpened: () => void }) {
         <img
           src={monogram}
           alt={`${COUPLE.bride} and ${COUPLE.groom}`}
-          width={883}
-          height={968}
+          width={848}
+          height={942}
           className="h-auto w-[64%]"
           // No pool of light behind it and no contrast filter: the artwork is
           // high enough resolution to hold its own against the frost, and both
