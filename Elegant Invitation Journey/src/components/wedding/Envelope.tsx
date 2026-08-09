@@ -79,34 +79,17 @@ export function Envelope({ onOpened }: { onOpened: () => void }) {
             frost rather than as a pasted rectangle. Sized by width — the mark
             is taller than wide, and height-driven sizing overflows narrow
             phones sideways. */}
-        <div className="relative flex w-[64%] items-center justify-center">
-          {/* A pool of light behind the mark. The frost alone still lets the
-              photograph read through, and fine script over a busy ground loses
-              its shape — this quiets only what sits directly behind it. */}
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute -inset-[12%]"
-            style={{
-              background:
-                "radial-gradient(58% 52% at 50% 48%, oklch(0.985 0.008 84 / 0.72) 0%, oklch(0.985 0.008 84 / 0.42) 55%, transparent 100%)",
-            }}
-          />
-
-          <img
-            src={monogram}
-            alt={`${COUPLE.bride} and ${COUPLE.groom}`}
-            width={433}
-            height={486}
-            className="relative h-auto w-full"
-            style={{
-              // The source is a screenshot, so it is already being upscaled on a
-              // retina phone; a little extra contrast keeps the hairlines from
-              // dissolving into the frost.
-              filter:
-                "contrast(1.14) saturate(1.06) drop-shadow(0 2px 12px oklch(0.28 0.03 55 / 0.22))",
-            }}
-          />
-        </div>
+        <img
+          src={monogram}
+          alt={`${COUPLE.bride} and ${COUPLE.groom}`}
+          width={883}
+          height={968}
+          className="h-auto w-[64%]"
+          // No pool of light behind it and no contrast filter: the artwork is
+          // high enough resolution to hold its own against the frost, and both
+          // were only propping up the low-resolution screenshot it replaced.
+          style={{ filter: "drop-shadow(0 2px 12px oklch(0.28 0.03 55 / 0.2))" }}
+        />
       </div>
 
       {/* CTA */}
