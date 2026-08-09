@@ -15,11 +15,26 @@ export function MusicToggle() {
   return (
     <button
       type="button"
-      onClick={toggleMute}
+      // Acts on pointer-down rather than waiting for the click, so it responds
+      // to the first tap instead of after Safari has finished deciding whether
+      // a double-tap is coming.
+      onPointerDown={toggleMute}
+      onClick={(e) => {
+        // Only keyboard and assistive activation reach here: those dispatch a
+        // click with no pointer behind it, which is what detail === 0 means.
+        // Running on every click as well would toggle twice per tap and look
+        // like nothing happened.
+        if (e.detail === 0) toggleMute();
+      }}
       aria-label={state.muted ? "Unmute music" : "Mute music"}
       aria-pressed={state.muted}
       className="glass fixed right-4 z-[60] flex size-11 items-center justify-center rounded-full shadow-[0_10px_28px_-12px_oklch(0.28_0.02_60/0.4)] transition-transform active:scale-95"
-      style={{ bottom: "calc(env(safe-area-inset-bottom) + 1rem)" }}
+      style={{
+        bottom: "calc(env(safe-area-inset-bottom) + 1rem)",
+        // Tells Safari there is no double-tap gesture here, so it stops waiting.
+        touchAction: "manipulation",
+        WebkitTapHighlightColor: "transparent",
+      }}
     >
       <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/70">
         <path d="M11 5 6 9H3v6h3l5 4V5z" />
