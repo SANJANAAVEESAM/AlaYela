@@ -337,9 +337,9 @@ export const EVENT_THEMES: Record<EventTheme, Theme> = {
     // Favour the arch, which is where the artwork leaves room to write.
     imagePosition: "70% top",
     // The fronds fall across the top ~350px of this sheet. The heading starts
-    // below the second one — clear of the leaves, and still high enough that
-    // the sheet does not open on a screen of empty ground.
-    contentStyle: { paddingTop: "9.5rem" },
+    // between the second and third — clear of the leaves, and still high enough
+    // that the sheet does not open on a screen of empty ground.
+    contentStyle: { paddingTop: "11.75rem" },
     art: (t) => <TeluguArt {...t} />,
   },
 };
