@@ -17,7 +17,6 @@ import {
   hotelHref,
   WEDDING_DATE_RANGE,
   WEDDING_YEAR,
-  TIMING_NOTE,
   WHATSAPP_NUMBER,
   venueMapsHref,
   type EventDay,
@@ -634,9 +633,6 @@ function EventsSection() {
           ))}
         </div>
 
-        <p className="mx-auto mt-8 max-w-[21rem] text-center font-body text-[0.66rem] leading-relaxed text-muted-foreground/80 italic">
-          {TIMING_NOTE}
-        </p>
 
         <div className="mt-5 text-center">
           <AddToCalendar compact event={FULL_WEDDING_CAL} />

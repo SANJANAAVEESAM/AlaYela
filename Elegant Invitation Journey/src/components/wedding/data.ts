@@ -79,7 +79,6 @@ export const GALLERY_FOLDERS: { label: string; url: string }[] = [
   },
 ];
 
-
 /**
  * A dress code the sheet can draw rather than merely state.
  *
@@ -254,7 +253,7 @@ export const EVENT_DAYS: EventDay[] = [
               parents: "S/o Smt. Yennamaneni Haritha & Sri. Yennamaneni Srinivas Rao",
             },
             {
-              name: "Lasya Rao",
+              name: "Lasya Rao Joginpally",
               parents: "D/o Smt. Joginpally Saritha & Sri. Joginapally Rajender Rao",
             },
           ],
@@ -298,8 +297,6 @@ export function venueMapsHref(venue: Venue): string | null {
 
 export const EVENTS: WeddingEvent[] = EVENT_DAYS.flatMap((day) => day.events);
 
-export const TIMING_NOTE =
-  "Please note that all event timings, except the wedding muhurtham, are tentative and may be updated closer to the celebrations.";
 
 export const FULL_WEDDING_CAL = {
   title: `${COUPLE.bride} & ${COUPLE.groom} — Wedding Celebrations`,
