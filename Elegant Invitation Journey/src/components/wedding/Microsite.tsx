@@ -1134,7 +1134,11 @@ function Rsvp() {
   const [picked, setPicked] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
-  const [submitted, setSubmitted] = useState<{ waHref: string; recorded: boolean } | null>(null);
+  const [submitted, setSubmitted] = useState<{
+    waHref: string;
+    recorded: boolean;
+    accepted: boolean;
+  } | null>(null);
   const [showPetals, setShowPetals] = useState(false);
 
   const allPicked = picked.length === allEvents.length;
@@ -1199,8 +1203,11 @@ function Rsvp() {
     }
     setSending(false);
 
-    setSubmitted({ waHref, recorded });
-    if (recorded) {
+    const accepted = attending === "yes";
+    setSubmitted({ waHref, recorded, accepted });
+    // Petals are a celebration. Raining them on someone who just told us they
+    // cannot come reads as tone-deaf.
+    if (recorded && accepted) {
       setShowPetals(true);
       setTimeout(() => setShowPetals(false), 9000);
     }
@@ -1221,10 +1228,12 @@ function Rsvp() {
             {submitted.recorded ? (
               <>
                 <p className="font-display text-xl text-foreground italic">
-                  Thank you — we can't wait to celebrate with you.
+                  {submitted.accepted
+                    ? "Thank you — we can't wait to celebrate with you."
+                    : "Thank you for letting us know — you'll be missed."}
                 </p>
                 <p className="font-body text-xs text-muted-foreground">
-                  Your RSVP has reached Lasya &amp; Avyay. Nothing more to do.
+                  Your reply has reached {COUPLE.bride} &amp; {COUPLE.groom}. Nothing more to do.
                 </p>
                 {/* Now genuinely optional: the answer is already recorded. */}
                 <a
