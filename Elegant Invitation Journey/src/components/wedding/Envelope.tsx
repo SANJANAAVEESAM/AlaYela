@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { COUPLE } from "./data";
-import { Monogram } from "./Monogram";
 import { startMusic } from "@/lib/music";
 import backdrop from "@/assets/backdrop.jpg";
+import monogram from "@/assets/monogram.png";
 
 /**
  * Scene 1 — the couple's illustration behind frosted glass, with the monogram
@@ -75,13 +75,38 @@ export function Envelope({ onOpened }: { onOpened: () => void }) {
           the button, but this mark is shorter and leaves ample room without it —
           and the offset was what made it look misplaced. */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <Monogram
-          variant="sprig"
-          bride={COUPLE.bride}
-          groom={COUPLE.groom}
-          className="w-[78%] text-bronze"
-          style={{ filter: "drop-shadow(0 2px 12px oklch(0.28 0.03 55 / 0.35))" }}
-        />
+        {/* The couple's own artwork, background keyed out so it sits on the
+            frost rather than as a pasted rectangle. Sized by width — the mark
+            is taller than wide, and height-driven sizing overflows narrow
+            phones sideways. */}
+        <div className="relative flex w-[64%] items-center justify-center">
+          {/* A pool of light behind the mark. The frost alone still lets the
+              photograph read through, and fine script over a busy ground loses
+              its shape — this quiets only what sits directly behind it. */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-[12%]"
+            style={{
+              background:
+                "radial-gradient(58% 52% at 50% 48%, oklch(0.985 0.008 84 / 0.72) 0%, oklch(0.985 0.008 84 / 0.42) 55%, transparent 100%)",
+            }}
+          />
+
+          <img
+            src={monogram}
+            alt={`${COUPLE.bride} and ${COUPLE.groom}`}
+            width={433}
+            height={486}
+            className="relative h-auto w-full"
+            style={{
+              // The source is a screenshot, so it is already being upscaled on a
+              // retina phone; a little extra contrast keeps the hairlines from
+              // dissolving into the frost.
+              filter:
+                "contrast(1.14) saturate(1.06) drop-shadow(0 2px 12px oklch(0.28 0.03 55 / 0.22))",
+            }}
+          />
+        </div>
       </div>
 
       {/* CTA */}
