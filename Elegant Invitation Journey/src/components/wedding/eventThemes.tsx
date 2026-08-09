@@ -240,8 +240,8 @@ export const EVENT_THEMES: Record<EventTheme, Theme> = {
     accent: "oklch(0.38 0.11 32)",
     scenery: "oklch(0.66 0.12 20)",
     leaf: "oklch(0.55 0.12 140)",
-    ink: "oklch(0.17 0.025 52)",
-    inkSoft: "oklch(0.28 0.025 56)",
+    ink: "oklch(0.12 0.022 50)",
+    inkSoft: "oklch(0.21 0.024 54)",
     surface: {
       background:
         "radial-gradient(130% 72% at 50% 0%, oklch(0.958 0.024 86) 0%, oklch(0.936 0.03 82) 52%, oklch(0.915 0.034 78) 100%)",
@@ -250,7 +250,7 @@ export const EVENT_THEMES: Record<EventTheme, Theme> = {
     cardPosition: "center 80%",
     cardOpacity: 0.24,
     scrim:
-      "linear-gradient(180deg, oklch(0.94 0.028 84 / 0.08) 0%, oklch(0.94 0.028 84 / 0.26) 48%, oklch(0.93 0.032 82 / 0.68) 78%, oklch(0.93 0.032 82 / 0.54) 100%)",
+      "linear-gradient(180deg, oklch(0.94 0.028 84 / 0.34) 0%, oklch(0.94 0.028 84 / 0.48) 48%, oklch(0.93 0.032 82 / 0.74) 78%, oklch(0.93 0.032 82 / 0.6) 100%)",
     art: (t) => <CarnivalArt {...t} />,
   },
 
