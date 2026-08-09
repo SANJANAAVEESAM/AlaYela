@@ -1503,11 +1503,25 @@ export function Microsite({ live }: { live: boolean }) {
 
         {/* Designer credit, last thing on the page. Kept out of the closing
             block so it reads as a signature under the whole invitation rather
-            than as part of the couple's sign-off. */}
-        <footer className="px-5 pb-12 text-center">
-          <p className="font-body text-[0.55rem] tracking-[0.24em] uppercase text-muted-foreground/60">
-            By {DESIGNER}
+            than as part of the couple's sign-off. "Designed by" rather than
+            "By": at the foot of a page the shorter form could mean written,
+            hosted or organised. */}
+        <footer className="flex items-center justify-center gap-3 px-5 pb-12">
+          {/* Rules flank the line rather than sitting above it. They are flex
+              items, so on a narrow phone they give way before the name wraps. */}
+          <span
+            aria-hidden="true"
+            className="h-px w-8"
+            style={{ background: "var(--gold)", opacity: 0.5 }}
+          />
+          <p className="shrink-0 font-body text-[0.55rem] tracking-[0.24em] uppercase text-muted-foreground/60">
+            Designed by {DESIGNER}
           </p>
+          <span
+            aria-hidden="true"
+            className="h-px w-8"
+            style={{ background: "var(--gold)", opacity: 0.5 }}
+          />
         </footer>
       </main>
     </div>
