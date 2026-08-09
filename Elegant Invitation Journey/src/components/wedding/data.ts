@@ -25,6 +25,9 @@ export const WHATSAPP_NUMBER = "18326686089";
 
 export const CONTACT_EMAIL = "lasyaandavyay@gmail.com";
 
+/** Credited in the closing line. */
+export const DESIGNER = "Sanjana Veesam";
+
 /**
  * Who to call. `tel` is the number that rings; `whatsapp` is only set when the
  * account lives on a different number, as Avyay's does — sending Chat to the

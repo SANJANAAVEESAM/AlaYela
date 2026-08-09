@@ -8,6 +8,7 @@ import {
   CONTACT_EMAIL,
   CONTACTS,
   COUPLE,
+  DESIGNER,
   DETAIL_CARDS,
   type DetailIcon,
   EVENT_DAYS,
@@ -1496,6 +1497,12 @@ export function Microsite({ live }: { live: boolean }) {
             </p>
             <p className="mt-8 font-body text-[0.6rem] tracking-[0.3em] uppercase text-muted-foreground">
               {COUPLE.bride} & {COUPLE.groom}
+            </p>
+
+            {/* Designer credit. Set a step quieter than the couple's names, so
+                it reads as a signature rather than competing with them. */}
+            <p className="mt-5 font-body text-[0.55rem] tracking-[0.24em] uppercase text-muted-foreground/65">
+              By {DESIGNER}
             </p>
           </Reveal>
         </section>
