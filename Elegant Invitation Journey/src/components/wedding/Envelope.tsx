@@ -1,24 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { COUPLE } from "./data";
+import { Monogram } from "./Monogram";
 import { startMusic } from "@/lib/music";
 import backdrop from "@/assets/backdrop.jpg";
-
-function Rule({ flip = false }: { flip?: boolean }) {
-  return (
-    <svg
-      viewBox="0 0 60 10"
-      className="mx-auto w-24"
-      aria-hidden="true"
-      style={{ transform: flip ? "rotate(180deg)" : undefined }}
-    >
-      <g fill="none" stroke="#b8862f" strokeOpacity="0.8" strokeWidth="0.8" strokeLinecap="round">
-        <path d="M2 5 H24" />
-        <path d="M36 5 H58" />
-        <path d="M30 1 C 33 3.5, 33 6.5, 30 9 C 27 6.5, 27 3.5, 30 1 Z" />
-      </g>
-    </svg>
-  );
-}
 
 /**
  * Scene 1 — the couple's illustration behind frosted glass, with the monogram
@@ -84,25 +68,20 @@ export function Envelope({ onOpened }: { onOpened: () => void }) {
         }}
       />
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3" style={{ paddingBottom: "8%" }}>
-        <Rule />
-        <p
-          className="font-monogram leading-none text-bronze"
-          style={{
-            fontSize: "clamp(3.6rem, 21vw, 6.4rem)",
-            filter: "drop-shadow(0 2px 12px oklch(0.28 0.03 55 / 0.45))",
-          }}
-        >
-          {COUPLE.bride[0]}
-          {COUPLE.groom[0]}
-        </p>
-        <Rule flip />
-        <p
-          className="mt-5 font-display tracking-[0.26em] uppercase"
-          style={{ color: "oklch(0.32 0.03 55)", fontSize: "clamp(0.8rem, 4vw, 1.05rem)" }}
-        >
-          {COUPLE.bride} &amp; {COUPLE.groom}
-        </p>
+      {/* The mark carries its own sprig, swash and names, so the flourishes and
+          the separate name line that used to frame the initials are gone —
+          keeping them would have doubled up on both. */}
+      <div
+        className="absolute inset-0 flex flex-col items-center justify-center"
+        style={{ paddingBottom: "8%" }}
+      >
+        <Monogram
+          variant="sprig"
+          bride={COUPLE.bride}
+          groom={COUPLE.groom}
+          className="h-[46%] text-bronze"
+          style={{ filter: "drop-shadow(0 2px 12px oklch(0.28 0.03 55 / 0.35))" }}
+        />
       </div>
 
       {/* CTA */}
