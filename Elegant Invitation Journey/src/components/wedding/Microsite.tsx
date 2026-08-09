@@ -13,6 +13,8 @@ import {
   EVENT_DAYS,
   FULL_WEDDING_CAL,
   GALLERY_FOLDERS,
+  HOTELS,
+  hotelHref,
   WEDDING_DATE_RANGE,
   WEDDING_YEAR,
   TIMING_NOTE,
@@ -878,6 +880,7 @@ function DetailCards() {
 
               {active.venues && <VenueList />}
               {active.gallery && <GalleryList />}
+              {active.hotels && <HotelList />}
             </div>
           </div>
         )}
@@ -976,6 +979,42 @@ function VenueList() {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/** Nearby hotels, each opening its own Google Maps place page. */
+function HotelList() {
+  return (
+    <div className="mx-auto mt-8 max-w-[20rem] text-left">
+      <p className="mb-1 font-body text-[0.58rem] font-medium tracking-[0.26em] uppercase text-muted-foreground">
+        Nearby hotels
+      </p>
+
+      {HOTELS.map((name, i) => (
+        <a
+          key={name}
+          href={hotelHref(name)}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center justify-between gap-3 py-3.5"
+          style={{
+            borderTop:
+              i === 0 ? "none" : "1px solid color-mix(in oklab, var(--gold) 28%, transparent)",
+          }}
+        >
+          <span className="min-w-0 font-display text-[1.08rem] leading-tight font-semibold text-ink-strong">
+            {name}
+          </span>
+          <span
+            aria-hidden="true"
+            className="shrink-0 rounded-full px-3.5 py-2 font-body text-[0.6rem] font-medium tracking-[0.14em] uppercase"
+            style={{ background: "var(--bronze)", color: "var(--primary-foreground)" }}
+          >
+            View
+          </span>
+        </a>
+      ))}
     </div>
   );
 }

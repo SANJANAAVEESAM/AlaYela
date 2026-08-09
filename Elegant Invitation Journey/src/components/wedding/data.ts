@@ -250,6 +250,22 @@ export const EVENT_DAYS: EventDay[] = [
   },
 ];
 
+/**
+ * Hotels near the celebrations. Linked by name rather than by a stored URL:
+ * a Maps search resolves to the place page — address, photos, reviews and
+ * booking links — and cannot rot the way a copied URL can.
+ */
+export const HOTELS: string[] = [
+  "Four Points by Sheraton Charlotte - Lake Norman",
+  "Courtyard by Marriott Charlotte Lake Norman",
+  "Comfort Suites Huntersville near Lake Norman",
+  "Best Western Plus Huntersville Inn",
+  "SpringHill Suites by Marriott Charlotte Huntersville",
+];
+
+export const hotelHref = (name: string) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`;
+
 /** Directions link, or null while the venue is still unconfirmed. */
 export function venueMapsHref(venue: Venue): string | null {
   if (venue.mapsUrl) return venue.mapsUrl;
@@ -284,11 +300,14 @@ export const DETAIL_CARDS: {
   venues?: boolean;
   /** Appends the shared photo folders under the copy. */
   gallery?: boolean;
+  /** Appends the nearby hotels under the copy. */
+  hotels?: boolean;
 }[] = [
   {
     title: "Accommodation",
     icon: "bed",
-    body: "Celebrations are spread across Charlotte and Cornelius, so anywhere around University City or Lake Norman keeps you close to everything.\n\nWe're sorting out room blocks now. Hotel names, rates and booking codes will appear here as soon as they're set, and everyone who RSVPs will hear from us directly.",
+    body: "These are the places we'd suggest, all close to the celebrations around Lake Norman and Huntersville. Tap any one to see it on Google — address, photos and reviews.\n\nWe're still sorting room blocks; rates and booking codes will appear here once they're set.",
+    hotels: true,
   },
   {
     title: "Travel",
