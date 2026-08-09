@@ -336,10 +336,10 @@ export const EVENT_THEMES: Record<EventTheme, Theme> = {
       "linear-gradient(90deg, oklch(0.95 0.02 84 / 0.62) 0%, oklch(0.95 0.02 84 / 0.28) 26%, transparent 46%), linear-gradient(180deg, oklch(0.96 0.016 86 / 0.06) 0%, oklch(0.955 0.018 84 / 0.22) 50%, oklch(0.95 0.02 82 / 0.6) 80%, oklch(0.95 0.02 82 / 0.46) 100%)",
     // Favour the arch, which is where the artwork leaves room to write.
     imagePosition: "70% top",
-    // The fronds fall across the top ~350px of this sheet. Starting the heading
-    // below the third one keeps the name off the leaves and sets it inside the
-    // arch, where the artwork leaves room for it.
-    contentStyle: { paddingTop: "14rem" },
+    // The fronds fall across the top ~350px of this sheet. The heading starts
+    // below the second one — clear of the leaves, and still high enough that
+    // the sheet does not open on a screen of empty ground.
+    contentStyle: { paddingTop: "9.5rem" },
     art: (t) => <TeluguArt {...t} />,
   },
 };
