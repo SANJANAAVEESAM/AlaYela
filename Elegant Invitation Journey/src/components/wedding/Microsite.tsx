@@ -653,12 +653,11 @@ function EventsSection() {
       >
         {open && (
           <div
-            // Starts lower than the other sheets. Short events sit centred, but
-            // the wedding's invitation makes it long enough to overflow, and an
-            // overflowing sheet begins at the very top — hard against the close
-            // button, with the artwork's own header cropped behind it.
-            className="relative flex min-h-full flex-col pt-14 pb-4 text-center"
-            style={{ color: look?.ink }}
+            className="relative flex min-h-full flex-col pt-8 pb-4 text-center"
+            // contentStyle lets a theme push its own copy clear of whatever its
+            // artwork puts in the way — the wedding uses it to start below the
+            // banana fronds rather than across them.
+            style={{ color: look?.ink, ...look?.contentStyle }}
           >
             <div className="my-auto w-full">
               <div className="relative w-full">
