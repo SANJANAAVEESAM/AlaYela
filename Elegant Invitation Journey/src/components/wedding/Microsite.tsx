@@ -716,24 +716,17 @@ function EventsSection() {
                   </div>
                 )}
 
+                {/* No hairline here: the block rules itself, top and bottom,
+                    and a second one directly above would stack. */}
                 {open.event.dressCode && (
-                  <>
-                    {/* The same hairline that separates the time from the venue,
-                        so the dress code reads as its own passage. */}
-                    <span
-                      aria-hidden="true"
-                      className="mx-auto block h-px w-12"
-                      style={{ background: accent, opacity: 0.5 }}
+                  <div className="pt-1">
+                    <DressCodeArt
+                      dressCode={open.event.dressCode}
+                      ink={look?.ink}
+                      inkSoft={look?.inkSoft}
+                      accent={accent}
                     />
-
-                    <div className="pt-1">
-                      <DressCodeArt
-                        dressCode={open.event.dressCode}
-                        ink={look?.ink}
-                        inkSoft={look?.inkSoft}
-                      />
-                    </div>
-                  </>
+                  </div>
                 )}
               </div>
 

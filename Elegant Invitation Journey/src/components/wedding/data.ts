@@ -87,9 +87,13 @@ export const GALLERY_FOLDERS: { label: string; url: string }[] = [
  * "bling". Only the three events that actually have a code carry one.
  */
 export type DressCode = {
-  kind: "solids" | "bling";
   label: string;
+  /** A single paragraph. Use `lines` instead when the guidance differs by guest. */
   note?: string;
+  /** Guidance split by who it applies to, e.g. Men / Women. */
+  lines?: { who: string; what: string }[];
+  /** Optional inspiration thumbnails, shown in a row beneath the wording. */
+  images?: string[];
 };
 
 export type Venue = {
@@ -145,9 +149,8 @@ export const EVENT_DAYS: EventDay[] = [
         time: "12:00 PM onwards",
         tentative: true,
         dressCode: {
-          kind: "solids",
-          label: "Solid colours",
-          note: "Any colour at all — just keep it one solid block.",
+          label: "Festive solid colours",
+          note: "Come dressed in festive solid colours — fuchsia, coral, emerald, teal, royal blue, purple, orange. Mirror work and playful accessories are encouraged.",
         },
         photosUrl: GALLERY_FOLDERS[0].url,
         venue: { name: "To be announced" }, // TODO(venue)
@@ -163,9 +166,8 @@ export const EVENT_DAYS: EventDay[] = [
         tentative: true,
         followsPrevious: true,
         dressCode: {
-          kind: "solids",
-          label: "Solid colours",
-          note: "Any colour at all — just keep it one solid block.",
+          label: "Festive solid colours",
+          note: "Come dressed in festive solid colours — fuchsia, coral, emerald, teal, royal blue, purple, orange. Mirror work and playful accessories are encouraged.",
         },
         photosUrl: GALLERY_FOLDERS[0].url,
         sharesVenueWithPrevious: true,
@@ -198,9 +200,11 @@ export const EVENT_DAYS: EventDay[] = [
         theme: "Bling • Masquerade Ball",
         time: "6:00 PM onwards",
         dressCode: {
-          kind: "bling",
-          label: "Bling",
-          note: "Sequins, shimmer and metallics — the more it catches the light, the better.",
+          label: "Cocktail & sequins",
+          lines: [
+            { who: "Men", what: "Party-wear suits — please avoid jeans and tennis shoes." },
+            { who: "Women", what: "Shiny black cocktail wear or sequinned dresses." },
+          ],
         },
         photosUrl: GALLERY_FOLDERS[3].url,
         venue: {
