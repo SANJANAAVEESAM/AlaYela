@@ -1523,9 +1523,15 @@ export function Microsite({ live }: { live: boolean }) {
               href={DESIGNER_URL}
               target="_blank"
               rel="noreferrer"
+              aria-label={`${DESIGNER} on Instagram`}
               className="underline decoration-[color-mix(in_oklab,var(--gold)_60%,transparent)] underline-offset-4 transition-colors hover:text-muted-foreground"
             >
               {DESIGNER}
+              {/* The same arrow the venue addresses use, so by the time a guest
+                  reaches the foot of the page they have already learnt it means
+                  this leads somewhere. Outside nothing, so it stays underlined
+                  with the name rather than trailing loose. */}
+              <span aria-hidden="true"> ↗</span>
             </a>
           </p>
           <span
