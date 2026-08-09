@@ -672,6 +672,46 @@ function EventsSection() {
                 />
               </div>
 
+              {/* The formal invitation, where one is set. Each family gets its
+                  own block, joined by "and", the way a card would set it —
+                  running it as one sentence would bury the names. */}
+              {open.event.invitation && (
+                <div className="mb-8 text-center">
+                  <p
+                    className="mx-auto max-w-[19rem] font-body text-[0.82rem] leading-relaxed"
+                    style={{ color: look?.inkSoft }}
+                  >
+                    {open.event.invitation.lead}
+                  </p>
+
+                  {open.event.invitation.parties.map((party, i) => (
+                    <div key={party.name}>
+                      {i > 0 && (
+                        <p
+                          className="my-3 font-display text-lg italic"
+                          style={{ color: look?.inkSoft }}
+                        >
+                          and
+                        </p>
+                      )}
+                      <p className="mt-3 font-display text-[1.45rem] leading-tight">{party.name}</p>
+                      <p
+                        className="mx-auto mt-1 max-w-[19rem] font-body text-[0.78rem] leading-relaxed"
+                        style={{ color: look?.inkSoft }}
+                      >
+                        {party.parents}
+                      </p>
+                    </div>
+                  ))}
+
+                  <span
+                    aria-hidden="true"
+                    className="mx-auto mt-8 block h-px w-16"
+                    style={{ background: accent, opacity: 0.5 }}
+                  />
+                </div>
+              )}
+
               {/* Set as invitation lines rather than a labelled list — the
                   artwork behind it reads as stationery, and labels fought it. */}
               <div className="space-y-5 text-center">
@@ -679,17 +719,7 @@ function EventsSection() {
                   {open.day.weekday}, {open.day.date} {WEDDING_YEAR}
                 </p>
 
-                <p className="font-display text-xl">
-                  {open.event.time}
-                  {open.event.tentative && (
-                    <span
-                      className="mt-1 block font-body text-xs italic"
-                      style={{ color: look?.inkSoft }}
-                    >
-                      Timing may change
-                    </span>
-                  )}
-                </p>
+                <p className="font-display text-xl">{open.event.time}</p>
 
                 <span
                   aria-hidden="true"

@@ -113,13 +113,20 @@ export type WeddingEvent = {
   /** Drives the accent and motif on the event's full-page details. */
   themeKey: EventTheme;
   time: string;
-  /** Everything except the muhurtham is provisional. */
-  tentative?: boolean;
   dressCode?: DressCode;
   /** Shared folder for this celebration's photos. */
   photosUrl?: string;
   /** Held at the same place as the event above it, so they list as one. */
   sharesVenueWithPrevious?: boolean;
+  /**
+   * The formal invitation, shown above the details. Structured rather than one
+   * run-on sentence so each family can be set on its own lines, the way an
+   * invitation card would.
+   */
+  invitation?: {
+    lead: string;
+    parties: { name: string; parents: string }[];
+  };
   /** TODO(content): Mehendi's dress code is an inspiration photo, not text —
    *  drop the image in src/assets and point this at it. */
   dressCodeImage?: string;
@@ -146,24 +153,22 @@ export const EVENT_DAYS: EventDay[] = [
         name: "Haldi",
         themeKey: "carnival",
         theme: "Carnival",
-        time: "12:00 PM onwards",
-        tentative: true,
+        time: "11:00 AM onwards",
         dressCode: {
           label: "Festive solid colours",
           note: "Come dressed in festive solid colours — fuchsia, coral, emerald, teal, royal blue, purple, orange. Mirror work and playful accessories are encouraged.",
         },
         photosUrl: GALLERY_FOLDERS[0].url,
         venue: { name: "To be announced" }, // TODO(venue)
-        start: ET(9, 29, 12, 0),
-        end: ET(9, 29, 16, 0),
+        start: ET(9, 29, 11, 0),
+        end: ET(9, 29, 15, 0),
       },
       {
         slug: "mehendi",
         name: "Mehendi",
         themeKey: "mehendi",
         theme: "Carnival",
-        time: "5:00 PM onwards",
-        tentative: true,
+        time: "4:00 PM onwards",
         followsPrevious: true,
         dressCode: {
           label: "Festive solid colours",
@@ -172,8 +177,8 @@ export const EVENT_DAYS: EventDay[] = [
         photosUrl: GALLERY_FOLDERS[0].url,
         sharesVenueWithPrevious: true,
         venue: { name: "To be announced" }, // TODO(venue)
-        start: ET(9, 29, 17, 0),
-        end: ET(9, 29, 22, 0),
+        start: ET(9, 29, 16, 0),
+        end: ET(9, 29, 21, 0),
       },
     ],
   },
@@ -187,7 +192,6 @@ export const EVENT_DAYS: EventDay[] = [
         themeKey: "pellikuthuru",
         theme: "Vintage",
         time: "9:30 AM onwards",
-        tentative: true,
         photosUrl: GALLERY_FOLDERS[1].url,
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 30, 9, 30),
@@ -228,7 +232,6 @@ export const EVENT_DAYS: EventDay[] = [
         themeKey: "pellikoduku",
         theme: "Vintage",
         time: "11:15 AM onwards",
-        tentative: true,
         photosUrl: GALLERY_FOLDERS[2].url,
         venue: { name: "To be announced" }, // TODO(venue)
         start: ET(9, 31, 11, 15),
@@ -241,6 +244,21 @@ export const EVENT_DAYS: EventDay[] = [
         theme: "Telugu Elegance",
         time: "Muhurtham: 7:25 PM",
         photosUrl: GALLERY_FOLDERS[4].url,
+        invitation: {
+          lead: "We cordially invite you to the wedding ceremony of",
+          parties: [
+            {
+              name: "Avyay Yennamaneni",
+              // TODO(names): the couple gave "Joginpally" for Saritha and
+              // "Joginapally" for Rajender — confirm which is right.
+              parents: "S/o Smt. Yennamaneni Haritha & Sri. Yennamaneni Srinivas Rao",
+            },
+            {
+              name: "Lasya Rao",
+              parents: "D/o Smt. Joginpally Saritha & Sri. Joginapally Rajender Rao",
+            },
+          ],
+        },
         venue: {
           name: "Sweet Magnolia Estate",
           address: "10101 Bailey Rd, Cornelius, NC 28031",
@@ -287,7 +305,7 @@ export const FULL_WEDDING_CAL = {
   title: `${COUPLE.bride} & ${COUPLE.groom} — Wedding Celebrations`,
   description: `Three days of celebrations for the wedding of ${COUPLE.bride} & ${COUPLE.groom}. Muhurtham on October 31 at 7:25 PM.`,
   location: "Charlotte, North Carolina",
-  startUtc: ET(9, 29, 12, 0).toISOString(),
+  startUtc: ET(9, 29, 11, 0).toISOString(),
   endUtc: ET(9, 31, 23, 0).toISOString(),
 };
 
