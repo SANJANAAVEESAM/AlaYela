@@ -30,6 +30,7 @@ import { DressCodeArt } from "./DressCodeArt";
 import { FloatingNav } from "./FloatingNav";
 import { Hero } from "./Hero";
 import { Modal } from "./Modal";
+import { MusicCandidates } from "./MusicCandidates";
 import { MusicToggle } from "./MusicToggle";
 import { Ornament } from "./Ornament";
 import { Petals } from "./Petals";
@@ -1448,6 +1449,7 @@ export function Microsite({ live }: { live: boolean }) {
       <BotanicalWatermark />
       <FloatingNav visible={live} />
       <MusicToggle />
+      <MusicCandidates />
 
       <main className="relative mx-auto w-full max-w-[26rem]">
         <Hero live={live} />

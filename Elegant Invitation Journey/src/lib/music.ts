@@ -18,9 +18,15 @@ const TARGET_VOLUME = 0.3;
 const FADE_MS = 3500;
 
 let audio: HTMLAudioElement | null = null;
-let ctx: AudioContext | null = null;
 let gain: GainNode | null = null;
 let muted = false;
+let current = MUSIC_SRC;
+
+/**
+ * One context for the page. Browsers cap how many can exist, and auditioning
+ * tracks means starting playback repeatedly, so it is created once and reused.
+ */
+let ctx: AudioContext | null = null;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -33,40 +39,39 @@ export function subscribeMusic(fn: () => void) {
 }
 
 export function getMusicState() {
-  return { playing: audio !== null, muted };
+  return { playing: audio !== null, muted, track: current };
 }
 
-/**
- * Routes the element through a gain node so the fade works on iOS.
- * Returns null when Web Audio is unavailable — the caller then falls back.
- */
-function buildGraph(el: HTMLAudioElement): GainNode | null {
+function getContext(): AudioContext | null {
+  if (ctx) return ctx;
   try {
     const Ctor =
       window.AudioContext ??
       (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!Ctor) return null;
-
     ctx = new Ctor();
-    const source = ctx.createMediaElementSource(el);
-    const node = ctx.createGain();
-    node.gain.value = 0;
-    source.connect(node);
-    node.connect(ctx.destination);
-    return node;
+    return ctx;
   } catch {
-    // Some browsers refuse a second source per element, or block the context
-    // outright. Silence here is fine; playback does not depend on it.
-    ctx = null;
     return null;
   }
 }
 
-/** Starts the invitation's track. Called from the tap that opens it. */
-export async function startMusic() {
-  if (audio || typeof window === "undefined") return;
+function stop() {
+  audio?.pause();
+  audio = null;
+  gain = null;
+}
 
-  const el = new Audio(MUSIC_SRC);
+/**
+ * Begins `src`, fading up over `fadeMs`.
+ * Resolves false when the file is missing or the browser refuses to play.
+ */
+async function play(src: string, fadeMs: number): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+  stop();
+  current = src;
+
+  const el = new Audio(src);
   el.loop = true;
   el.preload = "auto";
   el.muted = muted;
@@ -84,38 +89,69 @@ export async function startMusic() {
     { once: true },
   );
 
-  gain = buildGraph(el);
+  // A fresh gain node per element: createMediaElementSource may only be called
+  // once for a given element, so each track gets its own path into the context.
+  const context = getContext();
+  let node: GainNode | null = null;
+  if (context) {
+    try {
+      const source = context.createMediaElementSource(el);
+      node = context.createGain();
+      node.gain.value = 0;
+      source.connect(node);
+      node.connect(context.destination);
+    } catch {
+      node = null;
+    }
+  }
 
   try {
     await el.play();
     // Safari starts the context suspended even when created inside a gesture.
-    if (ctx?.state === "suspended") await ctx.resume();
+    if (context?.state === "suspended") await context.resume();
   } catch {
     emit();
-    return;
+    return false;
   }
 
   audio = el;
+  gain = node;
   emit();
 
   const started = performance.now();
   const step = (now: number) => {
     if (audio !== el) return;
-    const t = Math.min(1, (now - started) / FADE_MS);
+    const t = fadeMs <= 0 ? 1 : Math.min(1, (now - started) / fadeMs);
     const level = TARGET_VOLUME * t;
-    if (gain) gain.gain.value = level;
+    if (node) node.gain.value = level;
     else el.volume = level; // ignored on iOS, honoured everywhere else
     if (t < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
+  return true;
+}
+
+/** Starts the invitation's own track. Called from the tap that opens it. */
+export async function startMusic() {
+  if (audio) return;
+  await play(MUSIC_SRC, FADE_MS);
+}
+
+/** Swaps to another track almost immediately — used when auditioning. */
+export async function playTrack(src: string) {
+  return play(src, 400);
+}
+
+export function stopMusic() {
+  stop();
+  emit();
 }
 
 /**
  * Mutes and unmutes.
  *
  * Sets `.muted` rather than dropping the volume to zero: volume assignments are
- * ignored on iOS, which is why the control did nothing there. The gain node is
- * moved in step so unmuting does not jump back to full level mid-fade.
+ * ignored on iOS, which is why the control did nothing there.
  */
 export function toggleMute() {
   if (!audio) return;
