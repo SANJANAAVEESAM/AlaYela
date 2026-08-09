@@ -5,8 +5,10 @@
  * breaking the build. Playback only ever starts from the user's tap on the
  * envelope, which satisfies browser autoplay policies.
  */
-// TODO(music): drop an audio file at this path — public/music/invitation.mp3
-export const MUSIC_SRC = "/music/invitation.mp3";
+// AAC in an .m4a container rather than MP3: the source was already AAC, so
+// this avoids a second lossy hop through a different codec, and every browser
+// that matters plays it.
+export const MUSIC_SRC = "/music/invitation.m4a";
 const TARGET_VOLUME = 0.3;
 const FADE_MS = 3500;
 
