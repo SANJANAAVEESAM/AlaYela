@@ -142,7 +142,9 @@ function Sprig({ bride, groom }: { bride: string; groom: string }) {
     // the round numbers the paths were authored in: the artwork sat 59 units
     // low and 12 right inside the old box, so centring the box left the mark
     // visibly off-centre on the screen.
-    <svg viewBox="27 121 350 277" className="h-full w-auto" aria-hidden="true">
+    // Sized by width, not height: this mark is wider than it is tall, so
+    // driving it from height overflows a phone screen sideways.
+    <svg viewBox="27 121 350 277" className="h-auto w-full" aria-hidden="true">
       {/* Set well clear of the L: at the reference's proportions the leaves
           would otherwise grow through the letter. */}
       <g {...STROKE} strokeWidth="1.15">

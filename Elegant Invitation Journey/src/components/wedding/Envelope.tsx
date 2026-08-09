@@ -71,15 +71,15 @@ export function Envelope({ onOpened }: { onOpened: () => void }) {
       {/* The mark carries its own sprig, swash and names, so the flourishes and
           the separate name line that used to frame the initials are gone —
           keeping them would have doubled up on both. */}
-      <div
-        className="absolute inset-0 flex flex-col items-center justify-center"
-        style={{ paddingBottom: "8%" }}
-      >
+      {/* Truly centred. The old 8% bottom padding lifted the initials clear of
+          the button, but this mark is shorter and leaves ample room without it —
+          and the offset was what made it look misplaced. */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
         <Monogram
           variant="sprig"
           bride={COUPLE.bride}
           groom={COUPLE.groom}
-          className="h-[46%] text-bronze"
+          className="w-[78%] text-bronze"
           style={{ filter: "drop-shadow(0 2px 12px oklch(0.28 0.03 55 / 0.35))" }}
         />
       </div>
