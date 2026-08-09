@@ -34,6 +34,14 @@ export function Envelope({ onOpened }: { onOpened: () => void }) {
       role="button"
       tabIndex={0}
       aria-label="Open the invitation"
+      // Opens on pointer-down rather than waiting for a click. Safari holds a
+      // tap on a plain element while it decides whether a double-tap is coming,
+      // which read as the first tap doing nothing. Pointer-down is still a user
+      // gesture, so it satisfies the autoplay policy the music depends on.
+      onPointerDown={open}
+      // Kept for anything that dispatches a click without a pointer event —
+      // keyboard activation, assistive tech. The guard in open() means a real
+      // tap firing both still only opens once.
       onClick={open}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -42,7 +50,12 @@ export function Envelope({ onOpened }: { onOpened: () => void }) {
         }
       }}
       className="relative h-full w-full overflow-hidden outline-none"
-      style={{ cursor: opening ? "default" : "pointer" }}
+      style={{
+        cursor: opening ? "default" : "pointer",
+        // Tells Safari there is no double-tap gesture here, so it stops waiting.
+        touchAction: "manipulation",
+        WebkitTapHighlightColor: "transparent",
+      }}
     >
       {/* Opaque base: the frost above is only partly opaque, so without this the
           page shows through before the illustration has decoded. */}
