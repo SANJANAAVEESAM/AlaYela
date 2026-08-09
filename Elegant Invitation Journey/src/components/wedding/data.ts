@@ -200,7 +200,7 @@ export const EVENT_DAYS: EventDay[] = [
         theme: "Bling • Masquerade Ball",
         time: "6:00 PM onwards",
         dressCode: {
-          label: "Cocktail & sequins",
+          label: "Bling & Sequins",
           lines: [
             { who: "Men", what: "Party-wear suits — please avoid jeans and tennis shoes." },
             { who: "Women", what: "Shiny black cocktail wear or sequinned dresses." },
