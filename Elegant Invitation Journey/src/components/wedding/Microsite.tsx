@@ -30,7 +30,6 @@ import { DressCodeArt } from "./DressCodeArt";
 import { FloatingNav } from "./FloatingNav";
 import { Hero } from "./Hero";
 import { Modal } from "./Modal";
-import { MusicCandidates } from "./MusicCandidates";
 import { MusicToggle } from "./MusicToggle";
 import { Ornament } from "./Ornament";
 import { Petals } from "./Petals";
@@ -654,7 +653,11 @@ function EventsSection() {
       >
         {open && (
           <div
-            className="relative flex min-h-full flex-col pt-6 pb-4 text-center"
+            // Starts lower than the other sheets. Short events sit centred, but
+            // the wedding's invitation makes it long enough to overflow, and an
+            // overflowing sheet begins at the very top — hard against the close
+            // button, with the artwork's own header cropped behind it.
+            className="relative flex min-h-full flex-col pt-14 pb-4 text-center"
             style={{ color: look?.ink }}
           >
             <div className="my-auto w-full">
@@ -1479,7 +1482,6 @@ export function Microsite({ live }: { live: boolean }) {
       <BotanicalWatermark />
       <FloatingNav visible={live} />
       <MusicToggle />
-      <MusicCandidates />
 
       <main className="relative mx-auto w-full max-w-[26rem]">
         <Hero live={live} />
