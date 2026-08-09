@@ -203,7 +203,7 @@ export const EVENT_DAYS: EventDay[] = [
           label: "Bling & Sequins",
           lines: [
             { who: "Men", what: "Party-wear suits — please avoid jeans and tennis shoes." },
-            { who: "Women", what: "Shiny black cocktail wear or sequinned dresses." },
+            { who: "Women", what: "Shiny cocktail wear or sequinned dresses." },
           ],
         },
         photosUrl: GALLERY_FOLDERS[3].url,
