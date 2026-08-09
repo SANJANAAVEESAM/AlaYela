@@ -138,7 +138,11 @@ function Wreath({ bride, groom }: { bride: string; groom: string }) {
  */
 function Sprig({ bride, groom }: { bride: string; groom: string }) {
   return (
-    <svg viewBox="0 0 380 400" className="h-full w-auto" aria-hidden="true">
+    // The viewBox is cropped to the drawing's measured ink rather than left at
+    // the round numbers the paths were authored in: the artwork sat 59 units
+    // low and 12 right inside the old box, so centring the box left the mark
+    // visibly off-centre on the screen.
+    <svg viewBox="27 121 350 277" className="h-full w-auto" aria-hidden="true">
       {/* Set well clear of the L: at the reference's proportions the leaves
           would otherwise grow through the letter. */}
       <g {...STROKE} strokeWidth="1.15">
