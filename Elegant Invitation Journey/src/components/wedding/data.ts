@@ -306,7 +306,7 @@ export const DETAIL_CARDS: {
   {
     title: "Accommodation",
     icon: "bed",
-    body: "These are the places we'd suggest, all close to the celebrations around Lake Norman and Huntersville. Tap any one to see it on Google — address, photos and reviews.\n\nWe're still sorting room blocks; rates and booking codes will appear here once they're set.",
+    body: "These are the places we'd suggest, all close to the celebrations around Lake Norman and Huntersville. Tap any one to see it on Google — address, photos and reviews.",
     hotels: true,
   },
   {
