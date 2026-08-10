@@ -1,3 +1,5 @@
+import { COUPLE } from "@/components/wedding/data";
+
 export type CalendarEvent = {
   title: string;
   description: string;
@@ -28,11 +30,14 @@ export function googleCalendarUrl(event: CalendarEvent) {
 
 /** Downloads a .ics file — opens in Apple Calendar, Outlook, and most others. */
 export function downloadIcs(event: CalendarEvent) {
-  const uid = `${icsStamp(event.startUtc)}-${event.title.replace(/\W+/g, "")}@lasya-avyay`;
+  // Derived from the couple rather than hardcoded, so a copy of this project
+  // cannot ship someone else's name inside the calendar files guests download.
+  const slug = `${COUPLE.bride}-${COUPLE.groom}`.toLowerCase().replace(/\W+/g, "-");
+  const uid = `${icsStamp(event.startUtc)}-${event.title.replace(/\W+/g, "")}@${slug}`;
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Lasya & Avyay//Wedding//EN",
+    `PRODID:-//${COUPLE.bride} & ${COUPLE.groom}//Wedding//EN`,
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
