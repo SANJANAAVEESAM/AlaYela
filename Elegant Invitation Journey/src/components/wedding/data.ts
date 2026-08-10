@@ -253,12 +253,12 @@ export const EVENT_DAYS: EventDay[] = [
             {
               name: "Avyay Yennamaneni",
               // TODO(names): the couple gave "Joginpally" for Saritha and
-              // "Joginapally" for Rajender — confirm which is right.
+              // "Joginpally" for Rajender — confirm which is right.
               parents: "S/o Smt. Yennamaneni Haritha & Sri. Yennamaneni Srinivas Rao",
             },
             {
               name: "Lasya Rao Joginpally",
-              parents: "D/o Smt. Joginpally Saritha & Sri. Joginapally Rajender Rao",
+              parents: "D/o Smt. Joginpally Saritha & Sri. Joginpally Rajender Rao",
             },
           ],
         },
