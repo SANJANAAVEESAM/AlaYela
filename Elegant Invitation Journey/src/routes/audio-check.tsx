@@ -61,7 +61,13 @@ function AudioCheck() {
 
     el.volume = 0.5;
     const settable = Math.abs(el.volume - 0.5) < 0.01;
-    add("Volume settable", settable ? "yes → element volume path" : "no → Web Audio path");
+    add(
+      "WHAT THE SITE DOES HERE",
+      settable
+        ? "plays the element directly, no AudioContext involved"
+        : "routes through Web Audio (the iOS path)",
+    );
+    add("Volume settable", String(settable));
     el.volume = 0.3;
 
     let played = false;
@@ -91,7 +97,7 @@ function AudioCheck() {
         (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (Ctor) {
         const c = new Ctor();
-        add("AudioContext state", c.state, c.state === "suspended");
+        add("AudioContext state", c.state + " (a new one is always suspended — not a fault)");
         void c.close();
       } else {
         add("AudioContext", "unavailable");
@@ -149,7 +155,9 @@ function AudioCheck() {
             </div>
           ))}
           <p className="mt-3 font-body text-[0.68rem] text-muted-foreground">
-            Anything in red is a likely cause.
+            The lines that matter most are <strong>play()</strong> and{" "}
+            <strong>currentTime</strong>. If play() resolved and currentTime is
+            still 0.00s, the browser accepted it but is not actually playing.
           </p>
         </div>
       )}
