@@ -48,8 +48,11 @@ function volumeIsSettable(el: HTMLAudioElement) {
 
 /**
  * Routes the element through a gain node, for platforms that ignore `volume`.
- * Resumed immediately, while the user's gesture is still current — waiting
- * until after `play()` resolves can be too late for the autoplay policy.
+ *
+ * Only ever connects a context that is already running. Routing an element into
+ * a suspended context is a one-way door: its output moves into the graph, and
+ * if that graph never starts, the track plays to nobody with no way back. Music
+ * that cannot fade is a small loss; music nobody can hear is not.
  */
 function buildGraph(el: HTMLAudioElement): GainNode | null {
   try {
@@ -58,14 +61,19 @@ function buildGraph(el: HTMLAudioElement): GainNode | null {
       (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!Ctor) return null;
 
-    ctx = new Ctor();
-    void ctx.resume();
+    const context = new Ctor();
+    void context.resume();
+    if (context.state !== "running") {
+      void context.close();
+      return null;
+    }
 
-    const source = ctx.createMediaElementSource(el);
-    const node = ctx.createGain();
+    ctx = context;
+    const source = context.createMediaElementSource(el);
+    const node = context.createGain();
     node.gain.value = 0;
     source.connect(node);
-    node.connect(ctx.destination);
+    node.connect(context.destination);
     return node;
   } catch {
     ctx = null;
@@ -96,6 +104,9 @@ export async function startMusic() {
 
   const canSetVolume = volumeIsSettable(el);
   const node = canSetVolume ? null : buildGraph(el);
+  // No fade available: start audible rather than at zero, or a platform that
+  // ignores volume and has no graph would stay silent forever.
+  if (!canSetVolume && !node) el.volume = TARGET_VOLUME;
 
   try {
     await el.play();
