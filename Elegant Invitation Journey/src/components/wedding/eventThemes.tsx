@@ -339,7 +339,7 @@ export const EVENT_THEMES: Record<EventTheme, Theme> = {
     // The fronds fall across the top ~350px of this sheet. The heading starts
     // between the second and third — clear of the leaves, and still high enough
     // that the sheet does not open on a screen of empty ground.
-    contentStyle: { paddingTop: "11.75rem" },
+    contentStyle: { paddingTop: "6rem" },
     art: (t) => <TeluguArt {...t} />,
   },
 };
