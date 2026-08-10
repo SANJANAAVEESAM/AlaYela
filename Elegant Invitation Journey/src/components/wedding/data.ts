@@ -23,6 +23,13 @@ export const WEDDING_DATE_RANGE = `October 29–31, ${WEDDING_YEAR}`;
 
 export const WHATSAPP_NUMBER = "18326686089";
 
+/**
+ * Where the invitation lives. Share previews need absolute URLs — a crawler
+ * has no page context to resolve a relative path against, which is why no
+ * photograph was appearing.
+ */
+export const SITE_URL = "https://thelavstory.com";
+
 export const CONTACT_EMAIL = "lasyaandavyay@gmail.com";
 
 /** Credited in the closing line. */

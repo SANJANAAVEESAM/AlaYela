@@ -10,7 +10,7 @@ import {
 import type { ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import ogImage from "../assets/couple.jpg";
+import { SITE_URL } from "@/components/wedding/data";
 import backdrop from "../assets/backdrop.jpg";
 
 
@@ -81,7 +81,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Lasya & Avyay" },
       { property: "og:description", content: "The wedding of Lasya & Avyay — October 29–31, 2026, Charlotte, North Carolina." },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: ogImage },
+      // Absolute, and a purpose-made 1200x630 card rather than the portrait
+      // photograph — sharing apps crop 1.91:1, and a portrait loses their faces.
+      { property: "og:image", content: `${SITE_URL}/share.jpg` },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Lasya and Avyay on the beach at sunset" },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:site_name", content: "Lasya & Avyay" },
+      { name: "twitter:image", content: `${SITE_URL}/share.jpg` },
       { name: "twitter:card", content: "summary_large_image" },
       // Unlisted rather than private — see public/robots.txt.
       { name: "robots", content: "noindex, nofollow" },

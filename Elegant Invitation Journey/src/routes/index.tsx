@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { SITE_URL } from "@/components/wedding/data";
 import { Envelope } from "@/components/wedding/Envelope";
 import { Microsite } from "@/components/wedding/Microsite";
 
