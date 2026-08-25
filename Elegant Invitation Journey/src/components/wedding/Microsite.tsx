@@ -922,9 +922,9 @@ function DetailCards() {
  */
 function VenueList() {
   // Events sharing a venue collapse into one row — "Haldi & Mehendi" rather
-  // than the same address twice. Driven by an explicit flag, not by matching
-  // venue names: four venues currently read "To be announced", and matching on
-  // that would merge celebrations that have nothing to do with each other.
+  // than the same address twice. Driven by an explicit flag rather than by
+  // comparing venues, so that two celebrations only ever merge because someone
+  // said they belong together, never because their addresses happened to match.
   const rows: { dates: string[]; names: string[]; event: WeddingEvent }[] = [];
   EVENT_DAYS.forEach((day) =>
     day.events.forEach((event) => {

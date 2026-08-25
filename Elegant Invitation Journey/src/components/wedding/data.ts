@@ -153,6 +153,41 @@ export type EventDay = {
   events: WeddingEvent[];
 };
 
+/**
+ * Venues that host more than one celebration, named once and shared.
+ *
+ * Written out here rather than repeated inside each event so the address and
+ * the map link cannot drift apart between two celebrations at the same place.
+ *
+ * The map links carry both the address and Google's own place id (`ftid`),
+ * which is what makes them land on the venue's page rather than on a search
+ * that could resolve somewhere else. The tracking parameters that came with
+ * the shared links are dropped — they are tied to the session that produced
+ * them and mean nothing to a guest.
+ */
+const HEARTLAND: Venue = {
+  name: "Heartland Heritage Acres",
+  address: "2067 Coddle Creek Hwy, Mooresville, NC 28115",
+  mapsUrl:
+    "https://www.google.com/maps?q=Heartland+Heritage+Acres,+2067+Coddle+Creek+Hwy,+Mooresville,+NC+28115&ftid=0x885401007b69d963:0x1dd2ea1d7281c588",
+};
+
+const LUXE: Venue = {
+  name: "Luxe Event Venue",
+  address: "10213 John Adams Rd, Charlotte, NC 28262",
+  mapsUrl:
+    "https://maps.google.com/maps/place//data=!4m2!3m1!1s0x88541d7fe97a02a5:0x54f177497cd295da?entry=s&sa=X&ved=2ahUKEwiV4qiysf6VAxWyj4kEHTiHF2IQ4kB6BAgEEAA&hl=en",
+};
+
+// A home rather than a hall, so the street is the name and the town is the
+// second line — there is no venue name to put above it.
+const BEECHER_COMMONS: Venue = {
+  name: "19016 Beecher Commons Dr",
+  address: "Huntersville, NC 28078",
+  mapsUrl:
+    "https://www.google.com/maps?q=19016+Beecher+Commons+Dr,+Huntersville,+NC+28078&ftid=0x8856a826dac82289:0xb57cb91368b608fb",
+};
+
 export const EVENT_DAYS: EventDay[] = [
   {
     date: "29 October",
@@ -169,7 +204,7 @@ export const EVENT_DAYS: EventDay[] = [
           note: "Come dressed in festive solid colours — fuchsia, coral, emerald, teal, royal blue, purple, orange. Mirror work and playful accessories are encouraged.",
         },
         photosUrl: GALLERY_FOLDERS[0].url,
-        venue: { name: "To be announced" }, // TODO(venue)
+        venue: HEARTLAND,
         start: ET(9, 29, 11, 0),
         end: ET(9, 29, 15, 0),
       },
@@ -186,7 +221,7 @@ export const EVENT_DAYS: EventDay[] = [
         },
         photosUrl: GALLERY_FOLDERS[0].url,
         sharesVenueWithPrevious: true,
-        venue: { name: "To be announced" }, // TODO(venue)
+        venue: HEARTLAND,
         start: ET(9, 29, 16, 0),
         end: ET(9, 29, 21, 0),
       },
@@ -203,7 +238,7 @@ export const EVENT_DAYS: EventDay[] = [
         theme: "Vintage",
         time: "9:30 AM onwards",
         photosUrl: GALLERY_FOLDERS[1].url,
-        venue: { name: "To be announced" }, // TODO(venue)
+        venue: LUXE,
         start: ET(9, 30, 9, 30),
         end: ET(9, 30, 13, 0),
       },
@@ -221,12 +256,8 @@ export const EVENT_DAYS: EventDay[] = [
           ],
         },
         photosUrl: GALLERY_FOLDERS[3].url,
-        venue: {
-          name: "Luxe Event Venue",
-          address: "10213 John Adams Rd, Charlotte, NC 28262",
-          mapsUrl:
-            "https://maps.google.com/maps/place//data=!4m2!3m1!1s0x88541d7fe97a02a5:0x54f177497cd295da?entry=s&sa=X&ved=2ahUKEwiV4qiysf6VAxWyj4kEHTiHF2IQ4kB6BAgEEAA&hl=en",
-        },
+        sharesVenueWithPrevious: true,
+        venue: LUXE,
         start: ET(9, 30, 18, 0),
         end: ET(9, 31, 0, 0),
       },
@@ -243,7 +274,7 @@ export const EVENT_DAYS: EventDay[] = [
         theme: "Vintage",
         time: "11:15 AM onwards",
         photosUrl: GALLERY_FOLDERS[2].url,
-        venue: { name: "To be announced" }, // TODO(venue)
+        venue: BEECHER_COMMONS,
         start: ET(9, 31, 11, 15),
         end: ET(9, 31, 14, 0),
       },
