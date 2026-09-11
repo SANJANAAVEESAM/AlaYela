@@ -312,17 +312,65 @@ export const EVENT_DAYS: EventDay[] = [
 ];
 
 /**
- * Hotels near the celebrations. Linked by name rather than by a stored URL:
+ * Hotels near the celebrations. Found by name rather than by a stored URL:
  * a Maps search resolves to the place page — address, photos, reviews and
  * booking links — and cannot rot the way a copied URL can.
+ *
+ * A booking link is the one exception, and it is stored because it has to be:
+ * it is not a place, it is our group's rate, and nothing but that exact URL
+ * will find it.
  */
-export const HOTELS: string[] = [
-  "Four Points by Sheraton Charlotte - Lake Norman",
-  "Courtyard by Marriott Charlotte Lake Norman",
-  "Comfort Suites Huntersville near Lake Norman",
-  "Best Western Plus Huntersville Inn",
-  "SpringHill Suites by Marriott Charlotte Huntersville",
+export type Hotel = {
+  /** The full name, which is what finds the right place on the map. */
+  name: string;
+  /**
+   * What the row shows. Every one of these hotels is in Huntersville, minutes
+   * from Lake Norman, so each full name ends in some arrangement of those two
+   * words — repeated down a list they stop telling a guest anything and only
+   * wrap each row onto a second line. The copy says where they are once.
+   */
+  label: string;
+  /**
+   * Where we hold a rate, the row books instead of pointing at a map — the
+   * discount only applies through this link, so sending a guest to the hotel's
+   * own site would quietly cost them money.
+   */
+  booking?: { url: string; deadline: Date };
+};
+
+// The hotel holding our rate leads, so the discount is the first thing read
+// rather than something found four rows down.
+export const HOTELS: Hotel[] = [
+  {
+    name: "Courtyard by Marriott Charlotte Lake Norman",
+    label: "Courtyard by Marriott",
+    booking: {
+      url: "https://app.marriott.com/resview2?id=1788463710453&key=GRP&app=resvlink",
+      deadline: ET(9, 14, 23, 59),
+    },
+  },
+  { name: "Four Points by Sheraton Charlotte - Lake Norman", label: "Four Points by Sheraton" },
+  { name: "Comfort Suites Huntersville near Lake Norman", label: "Comfort Suites" },
+  { name: "Best Western Plus Huntersville Inn", label: "Best Western Plus" },
+  {
+    name: "SpringHill Suites by Marriott Charlotte Huntersville",
+    label: "SpringHill Suites by Marriott",
+  },
 ];
+
+/**
+ * The booking deadline in words, so the copy and the row cannot disagree.
+ *
+ * Formatted in Eastern time rather than the reader's: a guest booking from
+ * India should see the date the hotel means, not the one their own midnight
+ * happens to fall on.
+ */
+export const bookByLabel = (deadline: Date): string =>
+  deadline.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    timeZone: "America/New_York",
+  });
 
 export const hotelHref = (name: string) =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`;
@@ -348,9 +396,9 @@ export const FULL_WEDDING_CAL = {
 
 export type DetailIcon = "bed" | "plane" | "camera" | "pin";
 
-// TODO(content): hotel names, rates, booking codes and shuttle timings still
-// need to be filled in by the couple — the copy below says so plainly rather
-// than promising details that may not arrive.
+// TODO(content): shuttle timings still need to be filled in by the couple —
+// the copy below says so plainly rather than promising details that may not
+// arrive.
 export const DETAIL_CARDS: {
   title: string;
   icon: DetailIcon;
@@ -365,7 +413,7 @@ export const DETAIL_CARDS: {
   {
     title: "Accommodation",
     icon: "bed",
-    body: "These are the places we'd suggest, all close to the celebrations around Lake Norman and Huntersville. Tap any one to see it on Google — address, photos and reviews.",
+    body: "Our favourite places to stay, all in Huntersville and a few minutes from the celebrations. We'd love for everyone to be nearby.",
     hotels: true,
   },
   {
