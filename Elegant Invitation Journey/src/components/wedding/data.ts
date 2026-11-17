@@ -21,7 +21,7 @@ export const WEDDING_DATE = ET(9, 31, 19, 25);
 
 export const WEDDING_DATE_RANGE = `October 29–31, ${WEDDING_YEAR}`;
 
-export const WHATSAPP_NUMBER = "18326686089";
+export const WHATSAPP_NUMBER = "1234567890";
 
 /**
  * Where the invitation lives. Share previews need absolute URLs — a crawler
@@ -47,12 +47,12 @@ export const CONTACTS: {
   display: string;
   whatsapp?: string;
 }[] = [
-  { name: COUPLE.bride, tel: "+18326689442", display: "+1 832 668 9442" },
+  { name: COUPLE.bride, tel: "1234567890", display: "1234567890" },
   {
     name: COUPLE.groom,
-    tel: "+17049066859",
-    display: "+1 704 906 6859",
-    whatsapp: "+919550634521",
+    tel: "1234567890",
+    display: "1234567890",
+    whatsapp: "1234567890",
   },
 ];
 
